@@ -1,0 +1,17 @@
+# Build output
+out/
+build/
+
+# Odin object files
+*.o
+*.obj
+
+# Editor files
+*.swp
+*~
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
