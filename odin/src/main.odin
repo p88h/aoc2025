@@ -27,7 +27,7 @@ main :: proc() {
     day_arg := args[1]
     
     // Parse day number
-    day_num: int = ---
+    day_num: int = 0
     if strings.has_prefix(day_arg, "day") {
         day_num, _ = strconv.parse_int(day_arg[3:])
     } else {

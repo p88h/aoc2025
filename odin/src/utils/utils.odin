@@ -22,7 +22,7 @@ read_lines :: proc(filename: string) -> ([]string, bool) {
     return split_lines(content), true
 }
 
-// Split string into lines, handling both \n and \r\n
+// Split string into lines (handles \n only)
 split_lines :: proc(content: string) -> []string {
     lines := strings.split(content, "\n")
     // Remove empty trailing line if present
@@ -42,7 +42,7 @@ parse_int :: proc(s: string) -> int {
     return val
 }
 
-// Parse all lines as integers
+// Parse all lines as integers (caller must free the returned slice)
 parse_int_lines :: proc(lines: []string) -> []int {
     result := make([]int, len(lines))
     for line, i in lines {
