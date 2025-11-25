@@ -12,7 +12,6 @@ This repository contains solutions for Advent of Code 2025 implemented in [Odin]
 ### Building
 
 ```bash
-cd odin
 make build
 ```
 
@@ -41,21 +40,18 @@ make run DAY=1
 ### Project Structure
 
 ```
-odin/
 ├── Makefile           # Build configuration
 ├── inputs/            # Input files (dayNN.txt)
 ├── src/
 │   ├── main.odin      # Main entry point
-│   ├── utils/         # Common utility functions
-│   │   └── utils.odin # File reading, parsing helpers
-│   └── dayNN/         # Solutions for each day
-│       └── dayNN.odin
+│   ├── dayNN.odin     # Solutions for each day (one file per day)
+│   └── utils/         # Common utility functions
+│       └── utils.odin # File reading, parsing helpers
 └── out/               # Build output (gitignored)
 ```
 
 ### Adding a New Day
 
-1. Create a new directory: `src/dayNN/`
-2. Create the solution file: `src/dayNN/dayNN.odin`
-3. Import the day in `src/main.odin`
-4. Add the day to the switch statement in `main.odin`
+1. Create a new solution file: `src/dayNN.odin`
+2. Add `dayNN_run`, `dayNN_part1`, and `dayNN_part2` procedures
+3. Add the day to the switch statement in `main.odin`

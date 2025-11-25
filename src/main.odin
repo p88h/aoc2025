@@ -5,17 +5,6 @@ import "core:os"
 import "core:strings"
 import "core:strconv"
 
-import "day01"
-
-// Available days
-DAYS :: struct {
-    day01: proc(string),
-}
-
-days := DAYS{
-    day01 = day01.run,
-}
-
 main :: proc() {
     args := os.args
     
@@ -45,7 +34,7 @@ main :: proc() {
     // Run the appropriate day
     switch day_num {
     case 1:
-        days.day01(input_file)
+        day01_run(input_file)
     case:
         fmt.eprintln("Error: Day", day_num, "not implemented yet")
         print_usage()

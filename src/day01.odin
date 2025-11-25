@@ -1,17 +1,17 @@
-package day01
+package main
 
 import "core:fmt"
-import "../utils"
+import "utils"
 
 // Solve Part 1 of Day 01
-solve_part1 :: proc(lines: []string) -> int {
+day01_part1 :: proc(lines: []string) -> int {
     // TODO: Implement part 1 solution
     // This is a placeholder that counts lines
     return len(lines)
 }
 
 // Solve Part 2 of Day 01
-solve_part2 :: proc(lines: []string) -> int {
+day01_part2 :: proc(lines: []string) -> int {
     // TODO: Implement part 2 solution
     // This is a placeholder that sums line lengths
     total := 0
@@ -22,7 +22,7 @@ solve_part2 :: proc(lines: []string) -> int {
 }
 
 // Run Day 01 solutions
-run :: proc(input_file: string) {
+day01_run :: proc(input_file: string) {
     lines, ok := utils.read_lines(input_file)
     if !ok {
         fmt.eprintln("Error: Could not read input file:", input_file)
@@ -30,6 +30,6 @@ run :: proc(input_file: string) {
     }
     
     fmt.println("Day 01:")
-    fmt.println("  Part 1:", solve_part1(lines))
-    fmt.println("  Part 2:", solve_part2(lines))
+    fmt.println("  Part 1:", day01_part1(lines))
+    fmt.println("  Part 2:", day01_part2(lines))
 }
