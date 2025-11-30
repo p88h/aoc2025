@@ -1,57 +1,57 @@
-# aoc2025
-Advent of Code 2025
+p88h x Advent of Code 2025 (Hello, Odin)
+========================================
 
-## Odin Solutions
+This is a repository containing solutions for the 2025 Advent of Code (https://adventofcode.com/).
 
-This repository contains solutions for Advent of Code 2025 implemented in [Odin](https://odin-lang.org/).
+This years language of choice is [Odin](https://odin-lang.org/).
 
-### Prerequisites
-
-- [Odin compiler](https://odin-lang.org/docs/install/) installed and available in PATH
-
-### Building
-
-```bash
-make build
-```
-
-Or with the Odin compiler path specified:
-
-```bash
-ODIN=/path/to/odin make build
-```
-
-### Running
-
-Run a specific day's solution:
-
-```bash
-./out/aoc2025 1                    # Run day 1 with default input
-./out/aoc2025 day01                # Same as above
-./out/aoc2025 1 custom_input.txt   # Run day 1 with custom input file
-```
-
-Or use make:
-
-```bash
-make run DAY=1
-```
-
-### Project Structure
+After installing Odin, you should be able to run the solutions code by using
 
 ```
-├── Makefile           # Build configuration
-├── inputs/            # Input files (dayNN.txt)
-├── src/
-│   ├── main.odin      # Main entry point
-│   ├── dayNN.odin     # Solutions for each day (one file per day)
-│   └── utils/         # Common utility functions
-│       └── utils.odin # File reading, parsing helpers
-└── out/               # Build output (gitignored)
+# run all days
+$ odin run src
+# run one specific day 
+$ odin run src -- 4
 ```
 
-### Adding a New Day
+There are also some Makefile targets, you can use `make help` to list what that does. 
 
-1. Create a new solution file: `src/dayNN.odin`
-2. Add `dayNN_run`, `dayNN_part1`, and `dayNN_part2` procedures
-3. Add the day to the switch statement in `main.odin`
+Benchmarking
+============
+
+Automatic, the runner always benchmarks the results.
+
+Reference benchmark results are added here as well (BENCHMARKS.md)
+
+Visualisations
+==============
+
+`vis` directory contains visualisations for all days implemented with Raylib. To get this to run you can try:
+
+```
+$ odin run vis
+# run & record select a specific day 
+$ odin run vis -- rec 23
+```
+
+You can use day selection as with regular runner. Using `rec`, the visualisation will be recorded to file `out.mp4`. 
+This requires `ffmpeg` to be installed locally.
+
+If you don't care about tinkering with build system enough, visualisations are also published to [YouTube](https://www.youtube.com/@p88h.)
+
+You can also hop on straight to the [2025 playlist](https://youtu.be/dQw4w9WgXcQ)
+
+Copyright disclaimer
+====================
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use these files except in compliance with the License.
+You may obtain a copy of the License at
+
+   https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

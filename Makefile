@@ -29,10 +29,7 @@ run: build
 
 # Run all implemented days
 run-all: build
-	@for day in 1; do \
-		echo "=== Day $$day ==="; \
-		./$(BUILD_DIR)/aoc2025 $$day 2>/dev/null || true; \
-	done
+	./$(BUILD_DIR)/aoc2025
 
 # Check code (syntax check without building)
 check:
