@@ -39,7 +39,7 @@ This requires `ffmpeg` to be installed locally.
 
 If you don't care about tinkering with build system enough, visualisations are also published to [YouTube](https://www.youtube.com/@p88h.)
 
-You can also hop on straight to the [2025 playlist](https://youtu.be/dQw4w9WgXcQ)
+You can also hop on straight to the [2025 playlist](https://www.youtube.com/watch?v=ut_tFDQeM-M&list=PLgRrl8I0Q16_zCSbjbaIEDmkOd-CaQ4Vk)
 
 Copyright disclaimer
 ====================
