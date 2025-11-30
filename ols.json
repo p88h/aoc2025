@@ -2,7 +2,5 @@
     "$schema": "https://raw.githubusercontent.com/DanielGavin/ols/master/misc/ols.schema.json",
     "enable_document_symbols": true,
     "enable_hover": true,
-    "enable_snippets": true,
-    "odin_command": "/opt/odin/odin",
-    "odin_root_override": "/opt/odin"
+    "enable_snippets": true
 }

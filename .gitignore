@@ -6,11 +6,13 @@ build/
 *.o
 *.obj
 
-# Editor files
+# Temporary files
 *.swp
 *~
-.vscode/
-.idea/
+
+# AOC stuff
+inputs/
+.cookie
 
 # OS files
 .DS_Store

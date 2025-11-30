@@ -1,0 +1,40 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Odin Program",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/aoc2025",
+            "args": ["1"],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "odin: build debug"
+        },
+        {
+            "name": "Debug Odin Program (Custom Day)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/aoc2025",
+            "args": ["${input:day}"],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "odin: build debug"
+        },
+        {
+            "name": "Run Odin Program",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/aoc2025",
+            "args": ["1"],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "odin: build"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "day",
+            "type": "promptString",
+            "description": "Enter the day number to debug",
+            "default": "1"
+        }
+    ]
+}
