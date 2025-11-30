@@ -5,54 +5,40 @@ import "core:os"
 import "core:strings"
 import "core:strconv"
 
+DAY_RUNNERS :: [?]DayRunner {
+    day01, 
+}
+
 main :: proc() {
-    args := os.args
-    
-    if len(args) < 2 {
-        print_usage()
+    args := os.args    
+    day_num: int = 0
+    if len(args) > 1 {
+        stripped := strings.trim_left_proc(args[1], proc(r: rune) -> bool {
+            return !('0' <= r && r <= '9')
+        })
+        day_num, _ = strconv.parse_int(stripped)
+    }
+      
+    day_runners := DAY_RUNNERS
+    // Validate day number and get runner
+    if day_num < 0 || day_num > len(day_runners) {
+        fmt.eprintln("Error: Day", day_num, "not implemented yet")
         return
     }
-    
-    day_arg := args[1]
-    
-    // Parse day number
-    day_num: int = 0
-    if strings.has_prefix(day_arg, "day") {
-        day_num, _ = strconv.parse_int(day_arg[3:])
-    } else {
-        day_num, _ = strconv.parse_int(day_arg)
-    }
-    
-    // Determine input file
-    input_file: string
-    if len(args) >= 3 {
-        input_file = args[2]
-    } else {
-        input_file = fmt.tprintf("inputs/day%02d.txt", day_num)
-    }
-    
-    // Run the appropriate day
-    switch day_num {
-    case 1:
-        day01_run(input_file)
-    case:
-        fmt.eprintln("Error: Day", day_num, "not implemented yet")
-        print_usage()
+
+    // print result header
+    fmt.printf("        parse   part1   part2   total\n")
+    single := day_num != 0
+    for d := 1; d <= len(day_runners); d += 1 {
+        if day_num != 0 && day_num != d {
+            continue
+        }
+        contents, ok := get_input(d)
+        if !ok {
+            fmt.eprintln("Error: Could not read input for day", d)
+            continue
+        }
+        run_day(d, day_runners[d - 1], contents, single)
     }
 }
 
-print_usage :: proc() {
-    fmt.println("Advent of Code 2025 - Odin Solutions")
-    fmt.println()
-    fmt.println("Usage: aoc2025 <day> [input_file]")
-    fmt.println()
-    fmt.println("Arguments:")
-    fmt.println("  day         Day number (1-25) or dayNN format")
-    fmt.println("  input_file  Optional path to input file")
-    fmt.println("              Default: inputs/dayNN.txt")
-    fmt.println()
-    fmt.println("Examples:")
-    fmt.println("  aoc2025 1")
-    fmt.println("  aoc2025 day01")
-    fmt.println("  aoc2025 1 my_input.txt")
-}

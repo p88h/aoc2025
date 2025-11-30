@@ -1,35 +1,26 @@
 package main
 
-import "core:fmt"
-import "utils"
-
-// Solve Part 1 of Day 01
-day01_part1 :: proc(lines: []string) -> int {
-    // TODO: Implement part 1 solution
-    // This is a placeholder that counts lines
-    return len(lines)
+// Boilerplate
+Day01Data :: struct {
+	lines: []string,
 }
 
-// Solve Part 2 of Day 01
-day01_part2 :: proc(lines: []string) -> int {
-    // TODO: Implement part 2 solution
-    // This is a placeholder that sums line lengths
-    total := 0
-    for line in lines {
-        total += len(line)
-    }
-    return total
+day01 :: proc(contents: string) -> Solution {
+	data := new(Day01Data)
+	data.lines = split_lines(contents)
+	return Solution{data = data, part1 = day01_part1, part2 = day01_part2, cleanup = cleanup_raw_data}
 }
 
-// Run Day 01 solutions
-day01_run :: proc(input_file: string) {
-    lines, ok := utils.read_lines(input_file)
-    if !ok {
-        fmt.eprintln("Error: Could not read input file:", input_file)
-        return
-    }
-    
-    fmt.println("Day 01:")
-    fmt.println("  Part 1:", day01_part1(lines))
-    fmt.println("  Part 2:", day01_part2(lines))
+day01_part1 :: proc(raw_data: rawptr) -> int {
+	data := cast(^Day01Data)raw_data
+	return len(data.lines)
+}
+
+day01_part2 :: proc(raw_data: rawptr) -> int {
+	data := cast(^Day01Data)raw_data
+	total := 0
+	for line in data.lines {
+		total += len(line)
+	}
+	return total
 }
