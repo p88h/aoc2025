@@ -6,16 +6,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/out/aoc2025",
-            "args": ["1"],
-            "cwd": "${workspaceFolder}",
-            "preLaunchTask": "odin: build debug"
-        },
-        {
-            "name": "Debug Odin Program (Custom Day)",
-            "type": "lldb",
-            "request": "launch",
-            "program": "${workspaceFolder}/out/aoc2025",
-            "args": ["${input:day}"],
+            "args": ["${fileBasenameNoExtension}", "debug"],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "odin: build debug"
         },
@@ -24,7 +15,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/out/aoc2025",
-            "args": ["1"],
+            "args": ["${fileBasenameNoExtension}"],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "odin: build"
         }

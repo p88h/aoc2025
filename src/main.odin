@@ -12,17 +12,39 @@ DAY_RUNNERS :: [?]DayRunner {
 main :: proc() {
     args := os.args    
     day_num: int = 0
-    if len(args) > 1 {
-        stripped := strings.trim_left_proc(args[1], proc(r: rune) -> bool {
+    debug := false
+    for ap := 1; ap < len(args); ap += 1 {
+        if args[ap] == "debug" {
+            debug = true
+            continue
+        }
+        stripped := strings.trim_left_proc(args[ap], proc(r: rune) -> bool {
             return !('0' <= r && r <= '9')
         })
-        day_num, _ = strconv.parse_int(stripped)
+        val, ok := strconv.parse_int(stripped)
+        if ok {
+            day_num = val            
+        }
     }
-      
+
     day_runners := DAY_RUNNERS
     // Validate day number and get runner
     if day_num < 0 || day_num > len(day_runners) {
         fmt.eprintln("Error: Day", day_num, "not implemented yet")
+        return
+    }
+
+    if debug && day_num != 0 {
+        fmt.println("Running in debug mode")
+        runner := day_runners[day_num - 1]
+        contents, ok := get_input(day_num)
+        if !ok {
+            fmt.eprintln("Error: Could not read input for day", day_num)
+            return
+        }
+        ctx := runner(contents)
+        fmt.println("Part 1 result:", ctx.part1(ctx.data))
+        fmt.println("Part 2 result:", ctx.part2(ctx.data))
         return
     }
 
