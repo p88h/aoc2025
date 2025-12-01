@@ -91,7 +91,7 @@ get_input :: proc(day: int) -> (string, bool) {
 		cookie_data, cookie_ok := os.read_entire_file(".cookie")
 		cookie := string(cookie_data) if cookie_ok else ""
 		cookie = strings.trim_space(cookie)
-		url := fmt.tprintf("https://adventofcode.com/2024/day/%d/input", day)
+		url := fmt.tprintf("https://adventofcode.com/2025/day/%d/input", day)
 		download_file(url, filename, cookie)
 	}
 	return read_file(filename)

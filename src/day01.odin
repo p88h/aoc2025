@@ -2,25 +2,51 @@ package main
 
 // Boilerplate
 Day01Data :: struct {
-	lines: []string,
+	nums: []int,
 }
 
 day01 :: proc(contents: string) -> Solution {
 	data := new(Day01Data)
-	data.lines = split_lines(contents)
+	lines := split_lines(contents)
+    data.nums = make([]int, len(lines))
+    for line, idx in lines {
+        dir := line[0]
+        amt := parse_int(line[1:])
+        switch dir {
+            case 'L':
+                data.nums[idx] = -amt
+            case 'R':
+                data.nums[idx] = amt
+        }
+    }
 	return Solution{data = data, part1 = day01_part1, part2 = day01_part2, cleanup = cleanup_raw_data}
 }
 
 day01_part1 :: proc(raw_data: rawptr) -> int {
-	data := cast(^Day01Data)raw_data
-	return len(data.lines)
+    data := cast(^Day01Data)raw_data
+    pos := 50
+    pass := 0
+    for num in data.nums {
+        ofs := num 
+        pos = (pos + num) % 100
+        if pos == 0 {
+            pass += 1
+        }
+    }
+	return pass
 }
 
 day01_part2 :: proc(raw_data: rawptr) -> int {
-	data := cast(^Day01Data)raw_data
-	total := 0
-	for line in data.lines {
-		total += len(line)
-	}
-	return total
+    data := cast(^Day01Data)raw_data
+    pos := 50
+    pass := 0
+    for num in data.nums {        
+        pass += abs(num) / 100
+        amt := num % 100
+        if (pos > 0 && pos + amt <= 0) || pos + amt >= 100 {
+            pass += 1
+        }
+        pos = (pos + 100 + amt) % 100
+    }
+	return pass
 }
