@@ -18,7 +18,7 @@ print_time :: proc(t: u64, fmax: u64 = 99) {
         d = d / 1000
         ui += 1
     }
-    fmt.printf("\t%-2d.%d %s", d, r, units[ui])
+    fmt.printf("\t%d.%d %s", d, r, units[ui])
 }
 
 // Compare TimeVecs by total time (last element)
