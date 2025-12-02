@@ -93,54 +93,42 @@ day2_make_helper_table :: proc() -> [10][5][2]int {
     return help
 }
 
-day2_make_periodic_table :: proc() -> [100000]bool {
-    // helper table to exlude self-periodic patterns
-    // This could probably be optimized by checking the length only, but then it needs
-    // to consider ranges at different periods don't overlap cleanly, and computing the table is quick enough.
-    // (the cost is basically 0-allocating the table)
-    table := [100000]bool{}
-    for d in 1..=9 {
-        n := d
-        for r in 2..=5 {
-            n = n * 10 + d
-            table[n] = true
-        }
-    }
-    for d in 10..=99 {
-        table[d * 100 + d] = true        
-    }
-    return table
-}
-
 @(private = "file")
 part2 :: proc(raw_data: rawptr) -> int {
     data := cast(^Day2Input)raw_data
     ret := 0
     help := day2_make_helper_table()
-    periodic := day2_make_periodic_table()
     
     for r in data.ranges {
+        cnt := 0
         // Try all possible period lengths j that divide r.len, from largest to smallest
         for j: int = r.len/2; j >= 1; j -= 1 {
             if r.len % j != 0 {
                 continue
             }
+            // this can be skipped completely since it was counted at length 4
+            if j == 2 && r.len == 8 {
+                continue
+            }
+            cnt += 1
             rep := r.len / j
             bbase := help[r.len-1][j-1][0]
             mult := help[r.len-1][j-1][1]
             pat_start := r.start / bbase
             pat_end := r.end / bbase
-            
-            for p := pat_start; p * mult <= r.end; p += 1 {
-                val := p * mult
-                if val < r.start {
-                    continue
-                }
-                // Check if this pattern has a smaller primitive period by checking if p itself is periodic.
-                if periodic[p] {
-                    continue
-                }
-                ret += val
+            if pat_start * mult < r.start {
+                pat_start = (r.start + mult - 1) / mult
+            }
+            if pat_end * mult > r.end {
+                pat_end = r.end / mult
+            }
+            seq_sum := (pat_start + pat_end) * (pat_end - pat_start + 1) / 2            
+            if j == 1 && cnt > 1 {
+                // since cnt > 1, this pattern was already generated (cnt - 1) times
+                // So now we subtract the self-periodic patterns
+                ret -= seq_sum * mult * (cnt - 2)
+            } else {
+                ret += seq_sum * mult
             }
         }
     }
