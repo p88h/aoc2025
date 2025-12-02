@@ -41,6 +41,19 @@ day02 :: proc(contents: string) -> Solution {
 	return Solution{data = data, part1 = part1, part2 = part2, cleanup = cleanup_raw_data}
 }
 
+day2_sub_seq_sum :: #force_inline proc(start: int, end: int, bbase: int, mult: int) -> int {    
+    pat_start := start / bbase
+    pat_end := end / bbase
+    if pat_start * mult < start {
+        pat_start = (start + mult - 1) / mult
+    }
+    if pat_end * mult > end {
+        pat_end = end / mult
+    }
+    ssum := (pat_start + pat_end) * (pat_end - pat_start + 1) / 2
+    return ssum * mult
+}
+
 @(private = "file")
 part1 :: proc(raw_data: rawptr) -> int {
     data := cast(^Day2Input)raw_data
@@ -49,16 +62,11 @@ part1 :: proc(raw_data: rawptr) -> int {
         if r.len % 2 != 0 {
             continue
         }
-        b := 1
+        bbase := 1
         for _ in 0..<(r.len/2) {
-            b *= 10
+            bbase *= 10
         }
-        for i := r.start / b; i * b + i <= r.end; i += 1 {
-            if i * b + i < r.start {
-                continue
-            }
-            ret += i * b + i
-        }
+        ret += day2_sub_seq_sum(r.start, r.end, bbase, bbase + 1)
     }
 	return ret
 }
@@ -111,24 +119,13 @@ part2 :: proc(raw_data: rawptr) -> int {
                 continue
             }
             cnt += 1
-            rep := r.len / j
-            bbase := help[r.len-1][j-1][0]
-            mult := help[r.len-1][j-1][1]
-            pat_start := r.start / bbase
-            pat_end := r.end / bbase
-            if pat_start * mult < r.start {
-                pat_start = (r.start + mult - 1) / mult
-            }
-            if pat_end * mult > r.end {
-                pat_end = r.end / mult
-            }
-            seq_sum := (pat_start + pat_end) * (pat_end - pat_start + 1) / 2            
+            seq_sum := day2_sub_seq_sum(r.start, r.end, help[r.len-1][j-1][0], help[r.len-1][j-1][1])
             if j == 1 && cnt > 1 {
                 // since cnt > 1, this pattern was already generated (cnt - 1) times
                 // So now we subtract the self-periodic patterns
-                ret -= seq_sum * mult * (cnt - 2)
+                ret -= seq_sum * (cnt - 2)
             } else {
-                ret += seq_sum * mult
+                ret += seq_sum
             }
         }
     }
