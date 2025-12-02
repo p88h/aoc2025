@@ -6,7 +6,7 @@ import "core:strconv"
 
 // All available visualizations
 ALL_HANDLERS :: [?]Handler{
-    VIS00_HANDLER, VIS01_HANDLER
+    VIS00_HANDLER, VIS01_HANDLER, VIS02_HANDLER,
 }
 
 // Vis main entry point

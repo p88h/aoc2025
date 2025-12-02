@@ -8,13 +8,12 @@ Range :: struct {
     base: int,
 }
 
-@(private = "file")
-ParsedInput :: struct {
+Day2Input :: struct {
 	ranges: [dynamic]Range,
 }
 
 day02 :: proc(contents: string) -> Solution {
-	data := new(ParsedInput)
+	data := new(Day2Input)
     nums := fast_parse_all_integers(contents)
     data.ranges = make([dynamic]Range)
     // Read the ranges and make them 'nice' (split to ranges of same length)
@@ -44,7 +43,7 @@ day02 :: proc(contents: string) -> Solution {
 
 @(private = "file")
 part1 :: proc(raw_data: rawptr) -> int {
-    data := cast(^ParsedInput)raw_data
+    data := cast(^Day2Input)raw_data
     ret := 0
     for r in data.ranges {
         if r.len % 2 != 0 {
@@ -64,11 +63,7 @@ part1 :: proc(raw_data: rawptr) -> int {
 	return ret
 }
 
-@(private = "file")
-part2 :: proc(raw_data: rawptr) -> int {
-    data := cast(^ParsedInput)raw_data
-    ret := 0
-    // predefined patterns for max length of the input (ten digits)
+day2_make_helper_table :: proc() -> [10][5][2]int {
     help : [10][5][2]int = {}
     base := 10
 
@@ -95,22 +90,34 @@ part2 :: proc(raw_data: rawptr) -> int {
             help[len-1][rl-1] = {bbase, mult}
         }
     }
+    return help
+}
 
+day2_make_periodic_table :: proc() -> [100000]bool {
     // helper table to exlude self-periodic patterns
     // This could probably be optimized by checking the length only, but then it needs
     // to consider ranges at different periods don't overlap cleanly, and computing the table is quick enough.
     // (the cost is basically 0-allocating the table)
-    periodic := [100000]bool {}
+    table := [100000]bool{}
     for d in 1..=9 {
         n := d
         for r in 2..=5 {
             n = n * 10 + d
-            periodic[n] = true
+            table[n] = true
         }
     }
     for d in 10..=99 {
-        periodic[d * 100 + d] = true        
+        table[d * 100 + d] = true        
     }
+    return table
+}
+
+@(private = "file")
+part2 :: proc(raw_data: rawptr) -> int {
+    data := cast(^Day2Input)raw_data
+    ret := 0
+    help := day2_make_helper_table()
+    periodic := day2_make_periodic_table()
     
     for r in data.ranges {
         // Try all possible period lengths j that divide r.len, from largest to smallest
