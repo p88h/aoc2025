@@ -20,13 +20,32 @@ VisState :: struct {
 
 MAX_ROWS := 50
 
+day2_make_periodic_table :: proc() -> [100000]bool {
+    // helper table to exlude self-periodic patterns
+    // This could probably be optimized by checking the length only, but then it needs
+    // to consider ranges at different periods don't overlap cleanly, and computing the table is quick enough.
+    // (the cost is basically 0-allocating the table)
+    table := [100000]bool{}
+    for d in 1..=9 {
+        n := d
+        for r in 2..=5 {
+            n = n * 10 + d
+            table[n] = true
+        }
+    }
+    for d in 10..=99 {
+        table[d * 100 + d] = true        
+    }
+    return table
+}
+
 // Initialize the example visualization
 vis02_init :: proc(a: ^ASCIIRay) -> rawptr {
 	vis := new(VisState)
 	contents, ok := os.read_entire_file("inputs/day02.txt")
 	vis.input = cast(^sol.Day2Input)sol.day02(string(contents)).data
     vis.help = sol.day2_make_helper_table()
-    vis.periodic = sol.day2_make_periodic_table()
+    vis.periodic = day2_make_periodic_table()
     for i: int = 0; i < 16; i += 1 {
         vis.active_ranges[i] = -1
         vis.counter[i] = MAX_ROWS
