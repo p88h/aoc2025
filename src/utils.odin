@@ -37,8 +37,8 @@ split_lines :: proc(content: string) -> []string {
 
 // Parse a string to an integer, returns 0 if parsing fails
 parse_int :: proc(s: string) -> int {
-	trimmed := strings.trim_space(s)
-	val, ok := strconv.parse_int(trimmed)
+	// trimmed := strings.trim_space(s)
+	val, ok := strconv.parse_int(s)
 	if !ok {
 		return 0
 	}
@@ -59,6 +59,8 @@ fast_parse_all_integers :: proc(content: string) -> [dynamic]int {
 	current := 0
 	for c in content {
 		switch c {
+		case 'A'..='Z':
+			// ignore
 		case '0'..='9':
 			current = current * 10 + cast(int)(c - '0')
 		case:
