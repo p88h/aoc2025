@@ -51,6 +51,7 @@ main :: proc() {
     // print result header
     fmt.printf("        parse   part1   part2   total\n")
     single := day_num != 0
+    total := u64(0)
     for d := 1; d <= len(day_runners); d += 1 {
         if day_num != 0 && day_num != d {
             continue
@@ -60,7 +61,12 @@ main :: proc() {
             fmt.eprintln("Error: Could not read input for day", d)
             continue
         }
-        run_day(d, day_runners[d - 1], contents, single)
+        total += run_day(d, day_runners[d - 1], contents, single)
+    }
+    if (!single) {
+        fmt.print("\nTotal time: ")
+        print_time(total)
+        fmt.println("")
     }
 }
 
