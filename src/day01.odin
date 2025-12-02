@@ -1,12 +1,13 @@
 package main
 
 // Boilerplate
-Day01Data :: struct {
+@(private = "file")
+ParsedInput :: struct {
 	nums: []int,
 }
 
 day01 :: proc(contents: string) -> Solution {
-	data := new(Day01Data)
+	data := new(ParsedInput)
 	lines := split_lines(contents)
     data.nums = make([]int, len(lines))
     for line, idx in lines {
@@ -19,11 +20,12 @@ day01 :: proc(contents: string) -> Solution {
                 data.nums[idx] = amt
         }
     }
-	return Solution{data = data, part1 = day01_part1, part2 = day01_part2, cleanup = cleanup_raw_data}
+	return Solution{data = data, part1 = part1, part2 = part2, cleanup = cleanup_raw_data}
 }
 
-day01_part1 :: proc(raw_data: rawptr) -> int {
-    data := cast(^Day01Data)raw_data
+@(private = "file")
+part1 :: proc(raw_data: rawptr) -> int {
+    data := cast(^ParsedInput)raw_data
     pos := 50
     pass := 0
     for num in data.nums {
@@ -36,8 +38,9 @@ day01_part1 :: proc(raw_data: rawptr) -> int {
 	return pass
 }
 
-day01_part2 :: proc(raw_data: rawptr) -> int {
-    data := cast(^Day01Data)raw_data
+@(private = "file")
+part2 :: proc(raw_data: rawptr) -> int {
+    data := cast(^ParsedInput)raw_data
     pos := 50
     pass := 0
     for num in data.nums {        

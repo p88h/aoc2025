@@ -1,8 +1,6 @@
 package main
 
-import "core:strconv"
-import "core:strings"
-
+@(private = "file")
 Range :: struct {
     start: int,
     end: int,
@@ -10,13 +8,13 @@ Range :: struct {
     base: int,
 }
 
-// Boilerplate
-Day02Data :: struct {
+@(private = "file")
+ParsedInput :: struct {
 	ranges: [dynamic]Range,
 }
 
 day02 :: proc(contents: string) -> Solution {
-	data := new(Day02Data)
+	data := new(ParsedInput)
     nums := fast_parse_all_integers(contents)
     data.ranges = make([dynamic]Range)
     // Read the ranges and make them 'nice' (split to ranges of same length)
@@ -41,11 +39,12 @@ day02 :: proc(contents: string) -> Solution {
         }
         append(&data.ranges, Range{start = start, end = end, len = ll, base = rb})        
     }
-	return Solution{data = data, part1 = day02_part1, part2 = day02_part2, cleanup = cleanup_raw_data}
+	return Solution{data = data, part1 = part1, part2 = part2, cleanup = cleanup_raw_data}
 }
 
-day02_part1 :: proc(raw_data: rawptr) -> int {
-    data := cast(^Day02Data)raw_data
+@(private = "file")
+part1 :: proc(raw_data: rawptr) -> int {
+    data := cast(^ParsedInput)raw_data
     ret := 0
     for r in data.ranges {
         if r.len % 2 != 0 {
@@ -65,8 +64,9 @@ day02_part1 :: proc(raw_data: rawptr) -> int {
 	return ret
 }
 
-day02_part2 :: proc(raw_data: rawptr) -> int {
-    data := cast(^Day02Data)raw_data
+@(private = "file")
+part2 :: proc(raw_data: rawptr) -> int {
+    data := cast(^ParsedInput)raw_data
     ret := 0
     // predefined patterns for max length of the input (ten digits)
     help : [10][5][2]int = {}
