@@ -6,7 +6,7 @@ import "core:strings"
 import "core:strconv"
 
 DAY_RUNNERS :: [?]DayRunner {
-    day01, 
+    day01, day02
 }
 
 main :: proc() {

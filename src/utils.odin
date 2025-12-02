@@ -54,6 +54,23 @@ parse_int_lines :: proc(lines: []string) -> []int {
 	return result
 }
 
+fast_parse_all_integers :: proc(content: string) -> [dynamic]int {
+	nums := make([dynamic]int)
+	current := 0
+	for c in content {
+		switch c {
+		case '0'..='9':
+			current = current * 10 + cast(int)(c - '0')
+		case:
+			append(&nums, current)
+			current = 0
+		}
+	}
+	// Handle last number if content does not end with a separator
+	append(&nums, current)
+	return nums
+}
+
 // Download a file from a URL and save it to the specified path using curl
 download_file :: proc(url: string, path: string, cookie: string = "") -> bool {
 	fmt.printfln("Trying to download %s from %s", path, url)
