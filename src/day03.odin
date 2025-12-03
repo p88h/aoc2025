@@ -3,14 +3,13 @@ package main
 MAX_WIDTH :: 100
 MAX_ITER :: 16
 
-@(private = "file")
-ParsedInput :: struct {
+Day3Input :: struct {
 	next: [][MAX_WIDTH]u64,
 	width: int,
 }
 
 day03 :: proc(contents: string) -> Solution {
-	data := new(ParsedInput)
+	data := new(Day3Input)
 	lines := split_lines(contents)
 	// lowest position of each digit 1-9 at each position
 	data.next = make([][MAX_WIDTH]u64, len(lines))
@@ -30,7 +29,7 @@ day03 :: proc(contents: string) -> Solution {
 }
 
 @(private = "file")
-solve3 :: proc(data: ^ParsedInput, $iter: int) -> int {
+solve3 :: proc(data: ^Day3Input, $iter: int) -> int {
 	tot := 0
 	// use locals
 	width := data.width
@@ -57,10 +56,10 @@ solve3 :: proc(data: ^ParsedInput, $iter: int) -> int {
 
 @(private = "file")
 part1 :: proc(raw_data: rawptr) -> int {
-	return solve3(cast(^ParsedInput)raw_data, 2)
+	return solve3(cast(^Day3Input)raw_data, 2)
 }
 
 @(private = "file")
 part2 :: proc(raw_data: rawptr) -> int {
-	return solve3(cast(^ParsedInput)raw_data, 12)
+	return solve3(cast(^Day3Input)raw_data, 12)
 }
