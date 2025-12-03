@@ -53,12 +53,50 @@ solve2 :: proc(data: ^ParsedInput, $iter: int) -> int {
 	}
 	return tot
 }
+
+@(private = "file")
+solve3 :: proc(data: ^ParsedInput, $iter: int) -> int {
+	tot := 0
+	// use locals
+	width := data.width
+	// lowest index for each digit to continue from
+	best_next : [MAX_WIDTH]u64 = {}
+	for i in 0 ..< len(data.nums) {
+		tmp_next : u64 = 0xFFFFFFFFFFFFFFFF
+		// go backwards to fill best_next digit positions		
+		for j in 0 ..< width-data.start[i] {
+			num : uint = cast(uint)data.nums[i][width - j - 1]
+			// clear out 7 bits for this digit
+			tmp_next &= ~(u64(0x7F) << ((num-1) * 7))
+			tmp_next |= u64(width - j - 1) << ((num-1) * 7)
+			best_next[width - j - 1] = tmp_next
+		}
+		sol := 0
+		pos := data.start[i]
+		for k in 0..<iter {
+			// find next best digit to use
+			for d in 1 ..< 10 {
+				rd := (10 - d)
+				d_pos := cast(int)(best_next[pos] >> (cast(uint)(rd-1) * 7) & 0x7F)
+				if d_pos + (iter - k - 1) < width {
+					sol = sol * 10 + rd
+					pos = d_pos + 1
+					break;
+				}
+			} 
+		}
+		tot += sol
+	}
+	return tot
+}
+
+
 @(private = "file")
 part1 :: proc(raw_data: rawptr) -> int {
-	return solve2(cast(^ParsedInput)raw_data, 2)
+	return solve3(cast(^ParsedInput)raw_data, 2)
 }
 
 @(private = "file")
 part2 :: proc(raw_data: rawptr) -> int {
-	return solve2(cast(^ParsedInput)raw_data, 12)
+	return solve3(cast(^ParsedInput)raw_data, 12)
 }
