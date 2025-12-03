@@ -36,7 +36,7 @@ day03 :: proc(contents: string) -> Solution {
 }
 
 @(private = "file")
-solve :: proc(data: ^ParsedInput, #const iter: int) -> int {
+solve :: proc(data: ^ParsedInput, $iter: int) -> int {
 	tot := 0
 	// use locals
 	width := data.width
@@ -48,7 +48,7 @@ solve :: proc(data: ^ParsedInput, #const iter: int) -> int {
 		for j in 0 ..< width {
 			num_simd := data.num_simd[i][j]
 			// try to extend each best, from the longest
-			for k in 0 ..< iter {
+			#unroll for k in 0 ..< iter {
 				next_simd := simd.add(simd.mul(max_simd[iter - k - 1], x10), num_simd)
 				// check if this improves this legnth
 				max_simd[iter - k] = simd.max(max_simd[iter - k], next_simd)
