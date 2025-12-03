@@ -1,14 +1,13 @@
 package main
 
-
 MAX_WIDTH :: 100
 MAX_ITER :: 16
 
 @(private = "file")
 ParsedInput :: struct {
-	nums:     [][MAX_WIDTH]int,
-	start: 	  []int,
-	width:    int,
+	nums:  [][MAX_WIDTH]int,
+	start: []int,
+	width: int,
 }
 
 day03 :: proc(contents: string) -> Solution {
