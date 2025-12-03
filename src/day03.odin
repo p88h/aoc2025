@@ -1,34 +1,31 @@
 package main
 
-import "core:simd"
 
 MAX_WIDTH :: 100
 MAX_ITER :: 16
-SIMD_TYPE :: simd.u64x8
-SIMD_WIDTH :: 8
 
 @(private = "file")
 ParsedInput :: struct {
-	num_simd: [][MAX_WIDTH]SIMD_TYPE,
+	nums:     [][MAX_WIDTH]int,
+	start: 	  []int,
 	width:    int,
 }
 
 day03 :: proc(contents: string) -> Solution {
 	data := new(ParsedInput)
 	lines := split_lines(contents)
-	data.num_simd = make([][MAX_WIDTH]SIMD_TYPE, len(lines) / SIMD_WIDTH)
+	data.nums = make([][MAX_WIDTH]int, len(lines))
+	data.start = make([]int, len(lines))
 	data.width = len(lines[0])
-	for i in 0 ..< len(lines) / SIMD_WIDTH {
+	max_start := data.width - MAX_ITER
+	for i in 0 ..< len(lines) {
+		best := 0
 		for j in 0 ..< data.width {
-			data.num_simd[i][j] = SIMD_TYPE {
-				u64(lines[i * 8][j] - '0'),
-				u64(lines[i * 8 + 1][j] - '0'),
-				u64(lines[i * 8 + 2][j] - '0'),
-				u64(lines[i * 8 + 3][j] - '0'),
-				u64(lines[i * 8 + 4][j] - '0'),
-				u64(lines[i * 8 + 5][j] - '0'),
-				u64(lines[i * 8 + 6][j] - '0'),
-				u64(lines[i * 8 + 7][j] - '0'),
+			v := int(lines[i][j] - '0')
+			data.nums[i][j] = v
+			if v > best && j <= max_start {
+				best = v
+				data.start[i] = j
 			}
 		}
 	}
@@ -36,58 +33,33 @@ day03 :: proc(contents: string) -> Solution {
 }
 
 @(private = "file")
-solve :: proc(data: ^ParsedInput, $iter: int) -> int {
-	tot := 0
-	// use locals
-	width := data.width
-	x10 := SIMD_TYPE{10, 10, 10, 10, 10, 10, 10, 10}
-	max_simd: [MAX_ITER]SIMD_TYPE = {}
-	for i in 0 ..< len(data.num_simd) {
-		// best sequence of each length up to current position
-		max_simd = SIMD_TYPE{0, 0, 0, 0, 0, 0, 0, 0}
-		for j in 0 ..< width {
-			num_simd := data.num_simd[i][j]
-			// try to extend each best, from the longest
-			#unroll for k in 0 ..< iter {
-				next_simd := simd.add(simd.mul(max_simd[iter - k - 1], x10), num_simd)
-				// check if this improves this legnth
-				max_simd[iter - k] = simd.max(max_simd[iter - k], next_simd)
-			}
-		}
-		tot += cast(int)simd.reduce_add_bisect(max_simd[iter])
-	}
-	return tot
-}
-
-@(private = "file")
 solve2 :: proc(data: ^ParsedInput, $iter: int) -> int {
 	tot := 0
 	// use locals
 	width := data.width
-	x10 := SIMD_TYPE{10, 10, 10, 10, 10, 10, 10, 10}
-	max_simd: [MAX_ITER]SIMD_TYPE = {}
-	for i in 0 ..< len(data.num_simd) {
-		// best sequence of each length up to current position
-		max_simd = SIMD_TYPE{0, 0, 0, 0, 0, 0, 0, 0}
-		for j in 0 ..< width {
-			num_simd := data.num_simd[i][j]
+	// best sequence of each length up to current position
+	max_seq: [MAX_ITER]int = {}
+	for i in 0 ..< len(data.nums) {
+		max_seq = 0
+		for j in data.start[i] ..< width {
+			num := data.nums[i][j]
 			// try to extend each best, from the longest
 			#unroll for k in 0 ..< iter {
-				next_simd := simd.add(simd.mul(max_simd[iter - k - 1], x10), num_simd)
-				// check if this improves this legnth
-				max_simd[iter - k] = simd.max(max_simd[iter - k], next_simd)
+				next_seq := max_seq[iter - k - 1] * 10 + num
+				// check if it improves this length
+				max_seq[iter - k] = max(max_seq[iter - k], next_seq)
 			}
 		}
-		tot += cast(int)simd.reduce_add_bisect(max_simd[iter])
+		tot += max_seq[iter]
 	}
 	return tot
 }
 @(private = "file")
 part1 :: proc(raw_data: rawptr) -> int {
-	return solve(cast(^ParsedInput)raw_data, 2)
+	return solve2(cast(^ParsedInput)raw_data, 2)
 }
 
 @(private = "file")
 part2 :: proc(raw_data: rawptr) -> int {
-	return solve(cast(^ParsedInput)raw_data, 12)
+	return solve2(cast(^ParsedInput)raw_data, 12)
 }
