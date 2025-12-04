@@ -93,7 +93,7 @@ vis03_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 }
 
 // Boilerplate handler for the example visualization
-VIS03_HANDLER :: Handler {
+VIS03 :: Handler {
 	init = vis03_init,
 	step = vis03_step,
 	window = Window{width = 1280, height = 720, fps = 10, fsize = 24},
