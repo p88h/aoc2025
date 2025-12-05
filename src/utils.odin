@@ -59,9 +59,9 @@ fast_parse_all_integers :: proc(content: string) -> [dynamic]int {
 	current := 0
 	for c in content {
 		switch c {
-		case 'A'..='Z':
-			// ignore
-		case '0'..='9':
+		case 'A' ..= 'Z':
+		// ignore
+		case '0' ..= '9':
 			current = current * 10 + cast(int)(c - '0')
 		case:
 			append(&nums, current)
@@ -86,7 +86,7 @@ download_file :: proc(url: string, path: string, cookie: string = "") -> bool {
 	append(&args, "-f") // Fail on HTTP errors
 	append(&args, "-o", path) // Output file
 
-    if len(cookie) > 0 {
+	if len(cookie) > 0 {
 		append(&args, "-H", fmt.tprintf("Cookie: %s", cookie))
 	}
 
@@ -99,7 +99,7 @@ download_file :: proc(url: string, path: string, cookie: string = "") -> bool {
 
 	fmt.printfln("Failed to download file (curl exit code: %d)", state.exit_code)
 	fmt.printfln("Output: %s", out)
-    fmt.printfln("Error: %s", err_out)
+	fmt.printfln("Error: %s", err_out)
 	return false
 }
 
