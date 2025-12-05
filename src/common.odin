@@ -24,7 +24,7 @@ Solution :: struct {
 // Input is contents
 DayRunner :: proc(contents: string) -> Solution
 
-// testing support 
+// testing support
 
 G_TEST_ARENA: vmem.Arena
 
