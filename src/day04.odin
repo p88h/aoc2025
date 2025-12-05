@@ -95,11 +95,12 @@ part2 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day4Input)raw_data
 	pos := day4_find_start_pos(data)
 	idx := 0
-	for idx < len(pos) {
-		day4_remove_cell(data, &pos, pos[idx] >> 8, pos[idx] & 0xFF)
+	for len(pos) > 0 {
+		val := pop(&pos)
+		day4_remove_cell(data, &pos, val >> 8, val & 0xFF)
 		idx += 1
 	}
-	return len(pos)
+	return idx
 }
 
 @(test)

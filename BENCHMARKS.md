@@ -24,11 +24,11 @@ Odin: `dev-2025-11:e5153a937` (Homebrew), build flags: `-o:speed`
 
 ```
         parse   part1   part2   total
-day 01: 76.7 µs 14.3 µs 13.0 µs 0.1 ms  (+-1%) iter=29310
-day 02: 4.2 µs  0.3 µs  0.4 µs  4.9 µs  (+-5%) iter=98110
-day 03: 33.0 µs 5.4 µs  7.5 µs  46.0 µs (+-1%) iter=9110
-day 04: 43.0 µs 5.8 µs  91.2 µs 0.1 ms  (+-3%) iter=9910
-day 05: 61.1 µs 9.1 µs  0.1 µs  70.4 µs (+-1%) iter=9110
+day 01: 32.6 µs 13.3 µs 12.7 µs 58.8 µs (+-2%) iter=90010     
+day 02: 1.5 µs  0.1 µs  0.3 µs  1.9 µs  (+-3%) iter=98110    
+day 03: 29.9 µs 3.6 µs  6.2 µs  39.8 µs (+-1%) iter=14110    
+day 04: 40.4 µs 5.7 µs  84.7 µs 0.1 ms  (+-5%) iter=9910    
+day 05: 41.8 µs 7.4 µs  0.1 µs  49.4 µs (+-1%) iter=24110    
 
-Total time:     0.3 ms
+Total time:     0.2 ms
 ```
