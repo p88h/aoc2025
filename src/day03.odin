@@ -1,5 +1,6 @@
 package main
 
+import "core:testing"
 MAX_WIDTH :: 100
 MAX_ITER :: 16
 
@@ -25,7 +26,7 @@ day03 :: proc(contents: string) -> Solution {
 			data.next[i][width - j - 1] = tmp_next
 		}
 	}
-	return Solution{data = data, part1 = part1, part2 = part2, cleanup = cleanup_raw_data}
+	return Solution{data = data, part1 = part1, part2 = part2}
 }
 
 @(private = "file")
@@ -63,3 +64,15 @@ part1 :: proc(raw_data: rawptr) -> int {
 part2 :: proc(raw_data: rawptr) -> int {
 	return solve3(cast(^Day3Input)raw_data, 12)
 }
+
+@(test)
+test_day03 :: proc(t: ^testing.T) {
+    input := "987654321111111\n" +
+"811111111111119\n" +
+"234234234234278\n" +
+"818181911112111\n"
+    defer setup_test_allocator()()
+    solution := day03(input)
+    testing.expect_value(t, solution.part1(solution.data), 357)
+    testing.expect_value(t, solution.part2(solution.data), 3121910778619)
+}   

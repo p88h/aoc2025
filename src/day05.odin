@@ -52,7 +52,7 @@ day05 :: proc(contents: string) -> Solution {
 	for idx in ofs + 1 ..< len(nums) {
 		data.samples[idx - ofs - 1] = nums[idx]
 	}
-	return Solution{data = data, part1 = part1, part2 = part2, cleanup = cleanup_raw_data}
+	return Solution{data = data, part1 = part1, part2 = part2}
 }
 
 

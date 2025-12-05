@@ -3,6 +3,7 @@ package main
 import "core:fmt"
 import "core:slice"
 import "core:time"
+import vmem "core:mem/virtual"
 
 // Time vector: [parse, part1, part2, total]
 TimeVec :: [4]u64
@@ -39,13 +40,19 @@ run_day :: proc(day: int, runner: DayRunner, contents: string, single: bool = fa
         
         // Allocate contexts for this chunk
         ctxs := make([]Solution, chunk_iter)
+        arenas := make([]vmem.Arena, chunk_iter)
         defer delete(ctxs)
         
         // Parse phase - run chunk_iter times
         start := time.now()
+        default_alloc := context.allocator
         for i in 0 ..< chunk_iter {
+            alloc := vmem.arena_allocator(&arenas[i])
+            context.allocator = alloc
             ctxs[i] = runner(contents)
+            ctxs[i].allocator = alloc
         }
+        context.allocator = default_alloc
         parse_time := u64(time.diff(start, time.now()))
         times[cnk][0] = parse_time / u64(chunk_iter)
         print_time(times[cnk][0])
@@ -54,8 +61,10 @@ run_day :: proc(day: int, runner: DayRunner, contents: string, single: bool = fa
         start = time.now()
         a1: int = 0
         for i in 0 ..< chunk_iter {
+            context.allocator = ctxs[i].allocator
             a1 = ctxs[i].part1(ctxs[i].data)
         }
+        context.allocator = default_alloc
         part1_time := u64(time.diff(start, time.now()))
         times[cnk][1] = part1_time / u64(chunk_iter)
         print_time(times[cnk][1])
@@ -64,8 +73,10 @@ run_day :: proc(day: int, runner: DayRunner, contents: string, single: bool = fa
         start = time.now()
         a2: int = 0
         for i in 0 ..< chunk_iter {
+            context.allocator = ctxs[i].allocator
             a2 = ctxs[i].part2(ctxs[i].data)
         }
+        context.allocator = default_alloc
         part2_time := u64(time.diff(start, time.now()))
         times[cnk][2] = part2_time / u64(chunk_iter)
         print_time(times[cnk][2])
@@ -73,11 +84,9 @@ run_day :: proc(day: int, runner: DayRunner, contents: string, single: bool = fa
         // Total time
         times[cnk][3] = times[cnk][0] + times[cnk][1] + times[cnk][2]
         
-        // Cleanup all contexts
+        // Cleanup all contexts dynamic memory
         for i in 0 ..< chunk_iter {
-            if ctxs[i].cleanup != nil {
-                ctxs[i].cleanup(ctxs[i].data)
-            }
+            free_all(ctxs[i].allocator)
         }
         
         total_iter += chunk_iter

@@ -1,5 +1,7 @@
 package main
 
+import "core:testing"
+
 // Boilerplate
 @(private = "file")
 ParsedInput :: struct {
@@ -20,7 +22,7 @@ day01 :: proc(contents: string) -> Solution {
                 data.nums[idx] = amt
         }
     }
-	return Solution{data = data, part1 = part1, part2 = part2, cleanup = cleanup_raw_data}
+    return Solution{data = data, part1 = part1, part2 = part2}
 }
 
 @(private = "file")
@@ -52,4 +54,13 @@ part2 :: proc(raw_data: rawptr) -> int {
         pos = (pos + 100 + amt) % 100
     }
 	return pass
+}
+
+@(test)
+test_day01 :: proc(t: ^testing.T) {
+    input := "L68\nL30\nR48\nL5\nR60\nL55\nL1\nL99\nR14\nL82"
+    defer setup_test_allocator()()
+    solution := day01(input)
+    testing.expect_value(t, solution.part1(solution.data), 3)
+    testing.expect_value(t, solution.part2(solution.data), 6)
 }

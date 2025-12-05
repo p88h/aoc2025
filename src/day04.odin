@@ -44,7 +44,7 @@ day04 :: proc(contents: string) -> Solution {
     }
     data.width = width
     data.height = height
-	return Solution{data = data, part1 = part1, part2 = part2, cleanup = cleanup_raw_data}
+	return Solution{data = data, part1 = part1, part2 = part2}
 }
 
 @(private = "file")

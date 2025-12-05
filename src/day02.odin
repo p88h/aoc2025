@@ -1,5 +1,6 @@
 package main
 
+import "core:testing"
 @(private = "file")
 Range :: struct {
     start: int,
@@ -38,7 +39,7 @@ day02 :: proc(contents: string) -> Solution {
         }
         append(&data.ranges, Range{start = start, end = end, len = ll, base = rb})        
     }
-	return Solution{data = data, part1 = part1, part2 = part2, cleanup = cleanup_raw_data}
+	return Solution{data = data, part1 = part1, part2 = part2}
 }
 
 day2_sub_seq_sum :: #force_inline proc(start: int, end: int, bbase: int, mult: int) -> int {    
@@ -131,3 +132,14 @@ part2 :: proc(raw_data: rawptr) -> int {
     }
 	return ret
 }
+
+@(test)
+test_day02 :: proc(t: ^testing.T) {
+    input := "11-22,95-115,998-1012,1188511880-1188511890,222220-222224," +
+"1698522-1698528,446443-446449,38593856-38593862,565653-565659," +
+"824824821-824824827,2121212118-2121212124"
+    defer setup_test_allocator()()
+    solution := day02(input)
+    testing.expect_value(t, solution.part1(solution.data), 1227775554)
+    testing.expect_value(t, solution.part2(solution.data), 4174379265)
+}   
