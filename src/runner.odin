@@ -40,43 +40,31 @@ run_day :: proc(day: int, runner: DayRunner, contents: string, single: bool = fa
 
 		// Allocate contexts for this chunk
 		ctxs := make([]Solution, chunk_iter)
-		arenas := make([]vmem.Arena, chunk_iter)
+		arena : vmem.Arena
 		defer delete(ctxs)
+
+		default_alloc := context.allocator
+		context.allocator = vmem.arena_allocator(&arena)
 
 		// Parse phase - run chunk_iter times
 		start := time.now()
-		default_alloc := context.allocator
-		for i in 0 ..< chunk_iter {
-			alloc := vmem.arena_allocator(&arenas[i])
-			context.allocator = alloc
-			ctxs[i] = runner(contents)
-			ctxs[i].allocator = alloc
-		}
-		context.allocator = default_alloc
+		for i in 0 ..< chunk_iter do ctxs[i] = runner(contents)
 		parse_time := u64(time.diff(start, time.now()))
 		times[cnk][0] = parse_time / u64(chunk_iter)
 		print_time(times[cnk][0])
 
 		// Part 1 phase
 		start = time.now()
-		a1: int = 0
-		for i in 0 ..< chunk_iter {
-			context.allocator = ctxs[i].allocator
-			a1 = ctxs[i].part1(ctxs[i].data)
-		}
-		context.allocator = default_alloc
+		a1: int = ctxs[0].part1(ctxs[0].data)
+		for i in 1 ..< chunk_iter do a1 &= ctxs[i].part1(ctxs[i].data)		
 		part1_time := u64(time.diff(start, time.now()))
 		times[cnk][1] = part1_time / u64(chunk_iter)
 		print_time(times[cnk][1])
 
 		// Part 2 phase
 		start = time.now()
-		a2: int = 0
-		for i in 0 ..< chunk_iter {
-			context.allocator = ctxs[i].allocator
-			a2 = ctxs[i].part2(ctxs[i].data)
-		}
-		context.allocator = default_alloc
+		a2: int = ctxs[0].part2(ctxs[0].data)
+		for i in 1 ..< chunk_iter do a2 &= ctxs[i].part2(ctxs[i].data)
 		part2_time := u64(time.diff(start, time.now()))
 		times[cnk][2] = part2_time / u64(chunk_iter)
 		print_time(times[cnk][2])
@@ -84,10 +72,8 @@ run_day :: proc(day: int, runner: DayRunner, contents: string, single: bool = fa
 		// Total time
 		times[cnk][3] = times[cnk][0] + times[cnk][1] + times[cnk][2]
 
-		// Cleanup all contexts dynamic memory
-		for i in 0 ..< chunk_iter {
-			free_all(ctxs[i].allocator)
-		}
+		free_all(context.allocator)
+		context.allocator = default_alloc
 
 		total_iter += chunk_iter
 

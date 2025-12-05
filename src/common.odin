@@ -8,9 +8,6 @@ import vmem "core:mem/virtual"
 // Each dayXX.odin should provide a dayXX() function that parses input
 // and returns a Solution containing the parsed data and method implementations.
 Solution :: struct {
-	// Allocator used for this run
-	allocator: mem.Allocator,
-
 	// Opaque pointer to day-specific parsed data
 	data:      rawptr,
 
