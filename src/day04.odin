@@ -1,5 +1,6 @@
 package main
 
+import "core:testing"
 import "core:strings"
 import "core:fmt"
 
@@ -101,3 +102,21 @@ part2 :: proc(raw_data: rawptr) -> int {
     }
 	return len(pos)
 }
+
+@(test)
+test_day04 :: proc(t: ^testing.T) {
+    input := "..@@.@@@@.\n" +
+"@@@.@.@.@@\n" +
+"@@@@@.@.@@\n" +
+"@.@@@@..@.\n" +
+"@@.@@@@.@@\n" +
+".@@@@@@@.@\n" +
+".@.@.@.@@@\n" +
+"@.@@@.@@@@\n" +
+".@@@@@@@@.\n" +
+"@.@.@@@.@.\n"
+    defer setup_test_allocator()()
+    solution := day04(input)
+    testing.expect_value(t, solution.part1(solution.data), 13)
+    testing.expect_value(t, solution.part2(solution.data), 43)
+}   

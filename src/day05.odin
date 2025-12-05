@@ -1,6 +1,7 @@
 package main
 
 import "core:slice"
+import "core:testing"
 
 @(private = "file")
 Range :: struct {
@@ -86,3 +87,12 @@ part2 :: proc(raw_data: rawptr) -> int {
 	}
 	return ret
 }
+
+@(test)
+test_day05 :: proc(t: ^testing.T) {
+    input := "3-5\n10-14\n16-20\n12-18\n\n" + "1\n5\n8\n11\n17\n32"
+    defer setup_test_allocator()()
+    solution := day05(input)
+    testing.expect_value(t, solution.part1(solution.data), 3)
+    testing.expect_value(t, solution.part2(solution.data), 14)
+}   
