@@ -3,22 +3,26 @@ package main
 import "core:testing"
 
 Day1Data :: struct {
-	nums: []int,
+	nums: [dynamic]int,
 }
 
 day01 :: proc(contents: string) -> Solution {
 	data := new(Day1Data)
-	lines := split_lines(contents)
-	data.nums = make([]int, len(lines))
-	for line, idx in lines {
-		dir := line[0]
-		amt := parse_int(line[1:])
-		switch dir {
-		case 'L':
-			data.nums[idx] = -amt
-		case 'R':
-			data.nums[idx] = amt
-		}
+	buf := transmute([]byte)contents
+	data.nums = make([dynamic]int)
+	sign := 1
+	value := 0
+	for c in buf do switch c {
+	case 'L':
+		sign = -1
+	case 'R':
+		sign = 1
+	case '0' ..= '9':
+		value = value * 10 + cast(int)(c - '0')
+	case '\n':
+		append(&data.nums, sign * value)
+		value = 0
+		sign = 1
 	}
 	return Solution{data = data, part1 = part1, part2 = part2}
 }
