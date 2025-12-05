@@ -4,7 +4,6 @@ import "core:fmt"
 import "core:os"
 import "core:os/os2"
 import "core:path/filepath"
-import "core:strconv"
 import "core:strings"
 
 // Read the entire contents of a file as a string
@@ -33,25 +32,6 @@ split_lines :: proc(content: string) -> []string {
 		return lines[:len(lines) - 1]
 	}
 	return lines
-}
-
-// Parse a string to an integer, returns 0 if parsing fails
-parse_int :: proc(s: string) -> int {
-	// trimmed := strings.trim_space(s)
-	val, ok := strconv.parse_int(s)
-	if !ok {
-		return 0
-	}
-	return val
-}
-
-// Parse all lines as integers (caller must free the returned slice)
-parse_int_lines :: proc(lines: []string) -> []int {
-	result := make([]int, len(lines))
-	for line, i in lines {
-		result[i] = parse_int(line)
-	}
-	return result
 }
 
 fast_parse_all_integers :: proc(content: string) -> [dynamic]int {
