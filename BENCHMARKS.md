@@ -6,11 +6,11 @@ Odin: `dev-2025-11-nightly`, build flags: `-o:speed`
 
 ```
         parse   part1   part2   total
-day 01: 95.1 µs 10.9 µs 13.4 µs 0.1 ms  (+-2%) iter=9910
-day 02: 1.6 µs  0.1 µs  0.4 µs  2.3 µs  (+-4%) iter=98110
-day 03: 62.3 µs 2.5 µs  14.3 µs 79.3 µs (+-1%) iter=44110
-day 04: 83.5 µs 5.4 µs  0.1 ms  0.2 ms  (+-1%) iter=3010
-day 05: 54.6 µs 4.6 µs  0.1 µs  59.3 µs (+-1%) iter=24110
+day 01: 52.0 µs 10.9 µs 13.9 µs 76.9 µs (+-1%) iter=31010    
+day 02: 1.9 µs  0.1 µs  0.4 µs  2.4 µs  (+-7%) iter=98110     
+day 03: 65.0 µs 2.7 µs  15.3 µs 83.1 µs (+-1%) iter=69110     
+day 04: 85.0 µs 6.1 µs  0.1 ms  0.2 ms  (+-2%) iter=9910    
+day 05: 56.4 µs 4.8 µs  0.1 µs  61.3 µs (+-1%) iter=24110    
 
 Total time:     0.4 ms
 ```
