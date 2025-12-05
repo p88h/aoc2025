@@ -5,13 +5,13 @@ import "core:testing"
 
 @(private = "file")
 Range :: struct {
-	start: int,
-	end:   int,
+	start: u64,
+	end:   u64,
 }
 
 Day5Input :: struct {
 	ranges:  [dynamic]Range,
-	samples: []int,
+	samples: []u64,
 }
 
 day05 :: proc(contents: string) -> Solution {
@@ -22,19 +22,16 @@ day05 :: proc(contents: string) -> Solution {
 		ofs += 2
 	}
 	tmp_ranges := make([]Range, ofs / 2)
-	data.samples = make([]int, len(nums) - ofs - 1)
+	data.samples = make([]u64, len(nums) - ofs - 1)
 	for idx in 0 ..< ofs / 2 {
 		start := nums[idx * 2]
 		end := nums[idx * 2 + 1]
 		tmp_ranges[idx] = Range {
-			start = start,
-			end   = end,
+			start = u64(start),
+			end   = u64(end),
 		}
 	}
-	// preprocess: sort ranges by start point
-	slice.sort_by(tmp_ranges, proc(a, b: Range) -> bool {
-		return a.start < b.start
-	})
+	radix_sort(tmp_ranges, size_of(u64))
 	// Merge overlapping ranges
 	data.ranges = make([dynamic]Range)
 	current := tmp_ranges[0]
@@ -51,7 +48,7 @@ day05 :: proc(contents: string) -> Solution {
 	}
 	append(&data.ranges, current)
 	for idx in ofs + 1 ..< len(nums) {
-		data.samples[idx - ofs - 1] = nums[idx]
+		data.samples[idx - ofs - 1] = u64(nums[idx])
 	}
 	return Solution{data = data, part1 = part1, part2 = part2}
 }
@@ -63,7 +60,7 @@ part1 :: proc(raw_data: rawptr) -> int {
 	ret := 0
 	for s in data.samples {
 		// Binary search for the insertion point
-		idx, found := slice.binary_search_by(data.ranges[:], s, proc(r: Range, key: int) -> slice.Ordering {
+		idx, found := slice.binary_search_by(data.ranges[:], s, proc(r: Range, key: u64) -> slice.Ordering {
 			if r.start < key do return .Less
 			if r.start > key do return .Greater
 			return .Equal
@@ -81,11 +78,11 @@ part1 :: proc(raw_data: rawptr) -> int {
 @(private = "file")
 part2 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day5Input)raw_data
-	ret := 0
+	ret: u64 = 0
 	for s in data.ranges {
 		ret = ret + (s.end - s.start + 1)
 	}
-	return ret
+	return int(ret)
 }
 
 @(test)
