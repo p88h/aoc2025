@@ -5,6 +5,7 @@ build/
 # Odin object files
 *.o
 *.obj
+*.bin
 
 # Temporary files
 *.swp
