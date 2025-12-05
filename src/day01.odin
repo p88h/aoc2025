@@ -24,6 +24,9 @@ day01 :: proc(contents: string) -> Solution {
 		value = 0
 		sign = 1
 	}
+	if (value) != 0 {
+		append(&data.nums, sign * value)
+	}
 	return Solution{data = data, part1 = part1, part2 = part2}
 }
 
