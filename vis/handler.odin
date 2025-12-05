@@ -33,7 +33,7 @@ Handler :: struct {
 }
 
 // Internal context for the render loop
-@(private="file")
+@(private = "file")
 RunContext :: struct {
 	ascii_ray:   ASCIIRay,
 	viewer:      Viewer,
@@ -42,23 +42,23 @@ RunContext :: struct {
 }
 
 // Internal render callback that bridges to the handler's step function
-@(private="file")
+@(private = "file")
 render_callback :: proc(idx: uint, ptr: rawptr) -> bool {
-    ctx := cast(^RunContext)ptr
+	ctx := cast(^RunContext)ptr
 	return ctx.handler.step(ctx.handler_ctx, &ctx.ascii_ray, idx)
 }
 
 // Run a handler with optional recording
 handler_run :: proc(h: Handler, rec: bool) {
 	win := h.window
-    viewer := viewer_init(win.width, win.height, win.fps, "Advent Of Code", rec)
-    ctx := RunContext{
-        ascii_ray = asciiray_init(&viewer, win.fsize),
-        viewer = viewer,
-        handler = h,
-        handler_ctx = nil,  
-    }
+	viewer := viewer_init(win.width, win.height, win.fps, "Advent Of Code", rec)
+	ctx := RunContext {
+		ascii_ray   = asciiray_init(&viewer, win.fsize),
+		viewer      = viewer,
+		handler     = h,
+		handler_ctx = nil,
+	}
 	// ctx.ascii_ray.v = &ctx.viewer
-    ctx.handler_ctx = h.init(&ctx.ascii_ray)
+	ctx.handler_ctx = h.init(&ctx.ascii_ray)
 	viewer_loop(&ctx.viewer, render_callback, &ctx)
 }
