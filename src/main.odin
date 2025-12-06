@@ -5,7 +5,7 @@ import "core:os"
 import "core:strconv"
 import "core:strings"
 
-DAY_RUNNERS :: [?]DayRunner{day01, day02, day03, day04, day05}
+DAY_RUNNERS :: [?]DayRunner{day01, day02, day03, day04, day05, day06}
 
 main :: proc() {
 	args := os.args
