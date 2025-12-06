@@ -118,21 +118,21 @@ vis05_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 			if vis.pixels[sample] > 0 {
 				rl.DrawCircle(i32(sample % 1920), i32(sample / 1920), 2, rl.GREEN)
 				match += 1
-                last_match = true
+                last_row = sample / 1920
 			} else {
 				rl.DrawCircle(i32(sample % 1920), i32(sample / 1920), 2, rl.RED)
 				no_match += 1
-                last_match = false
+                last_row = sample / 1920
 			}
 			rl.DrawCircle(i32(sample % 1920), i32(sample / 1920), 1, rl.BROWN)
 		}
         if last_match {
-            make_noise(80, 1)
+            make_beep(piano_keys(last_row/10), 1.0, 0.016)
         } else {
-            make_noise(20, 1)
+            make_beep(piano_keys(last_row/10), 0.5, 0.008)
         }
 	} else {
-        make_noise(last_row / 20, 1)
+        make_beep(piano_keys(last_row/10), 0.75, 0.012)
     }
 	asciiray_write_xy(a, fmt.tprintf("Scale: 1:%d", SCALE), 1, 0, rl.YELLOW)
 	// asciiray_write_xy(a, fmt.tprintf("Pixel count: %d", vis.pixel_count), 1, 1, rl.YELLOW)

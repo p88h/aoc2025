@@ -55,7 +55,7 @@ vis06_init :: proc(a: ^ASCIIRay) -> rawptr {
 	}
 	vis.contents[len(vis.contents) - 2 * vis.width - 1] = 'M'
 	vis.contents[len(vis.contents) - 1] = 'R'
-	fmt.println("Contents: ", string(vis.contents))
+	// fmt.println("Contents: ", string(vis.contents))
 	vis.accumulator = -1
 	vis.speed = 15
 	vis.pos = 0
@@ -224,31 +224,31 @@ vis06_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 		// process digit
 		if ch >= '0' && ch <= '9' {
 			vis.value = vis.value * 10 + int(ch - '0')
-			make_noise(int(ch - '0') * 8, 1)
+			make_beep(piano_keys(int(ch - '0') * 5 + 20), 1.0, 0.016)
 		} else if ch == 'M' {
 			vis.memory += vis.accumulator
 			vis.accumulator = -1
 			vis.value = 0
-			make_noise(90, 2)
+			make_beep(piano_keys(80), 0.5, 0.016)
 		} else if ch == 'R' {
 			vis.accumulator = vis.memory
 			vis.memory = 0
 			vis.value = 0
-			make_noise(90, 10)
+			make_beep(piano_keys(90), 0.5, 0.016)
 		} else if ch == '+' {
 			if vis.accumulator == -1 {
 				vis.accumulator = 0
 			}
 			vis.accumulator += vis.value
 			vis.value = 0
-			make_noise(90, 1)
+			make_beep(piano_keys(15), 1.0, 0.016)
 		} else if ch == '*' {
 			if vis.accumulator == -1 {
 				vis.accumulator = 1
 			}
 			vis.accumulator *= vis.value
 			vis.value = 0
-			make_noise(90, 1)
+			make_beep(piano_keys(10), 1.0, 0.016)
 		} else {
 			make_noise(0, 0)
 		}
