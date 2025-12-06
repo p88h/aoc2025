@@ -34,7 +34,7 @@ viewer_loop :: proc(v: ^Viewer, render: ViewerRenderProc, ctx: rawptr) {
 	scale := rl.GetWindowScaleDPI().x
 
 	if v.rec {
-		v.ff = ffpipe_init(v.width, v.height, v.fps, scale)
+		v.ff = ffpipe_init_video(v.width, v.height, v.fps, scale)
 	}
 
 	for !rl.WindowShouldClose() && !done {
@@ -53,5 +53,6 @@ viewer_loop :: proc(v: ^Viewer, render: ViewerRenderProc, ctx: rawptr) {
 
 	if v.rec {
 		ffpipe_finish(&v.ff)
+        audio_finish()
 	}
 }

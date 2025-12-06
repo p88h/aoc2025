@@ -21,7 +21,7 @@ VisState :: struct {
 	px:          int,
 	py:          int,
 	pa:          int,
-    delay:       int,
+	delay:       int,
 }
 
 // Initialize the example visualization
@@ -57,8 +57,9 @@ vis06_init :: proc(a: ^ASCIIRay) -> rawptr {
 	vis.contents[len(vis.contents) - 1] = 'R'
 	fmt.println("Contents: ", string(vis.contents))
 	vis.accumulator = -1
-	vis.speed = 10
+	vis.speed = 15
 	vis.pos = 0
+	audio_init(a.v)
 	return vis
 }
 
@@ -74,7 +75,7 @@ find_digit_pos :: proc(ch: byte) -> (int, int) {
 	}
 	return -1, -1
 }
-// Step the example visualization
+
 vis06_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 	vis := cast(^VisState)ctx
 	rl.DrawRectangle(0, 0, 360, 640, rl.Color{40, 40, 40, 255})
@@ -112,7 +113,44 @@ vis06_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 	rl.DrawRectangle(16, 200, 300, 348, rl.BLACK)
 	rl.DrawRectangleLines(16, 200, 300, 348, rl.GREEN)
 	rl.DrawRectangleLines(17, 201, 298, 346, rl.GREEN)
-	// display solar cells below the screen
+	// print "IN", "ACC", "MEM" labels with small font at the bottom of the "screen"
+	labels := [3]string{"INPUT", "RESULT", "MEMORY"}
+    for i: int = 0; i < len(labels); i += 1 {
+        cmsg := strings.clone_to_cstring(labels[i], context.temp_allocator)
+        rl.DrawTextEx(
+            a.font,
+            cmsg,
+            {cast(f32)(24 + i * 80), 528.0},
+            a.fsize / 2,
+            1,
+            rl.DARKGRAY,
+        )
+    }
+	// display current value and accumulators vertically
+	val_str := fmt.aprintf("%d", vis.value)
+	acc_str := fmt.aprintf("%d", vis.accumulator)
+	mem_str := fmt.aprintf("%d", vis.memory)
+    print_num_vertical :: proc(a: ^ASCIIRay, num: int, x: i32, y: i32, color: rl.Color) {
+        num_str := fmt.aprintf("%d", num)
+        for i: int = 0; i < len(num_str); i += 1 {
+            asciiray_write_at(
+                a,
+                num_str[i:i + 1],
+                x + cast(i32)(i / 10) * 16,
+                y + cast(i32)(i % 10) * 32 + 4,
+                color,
+            )
+        }
+    }
+    print_num_vertical(a, vis.value, 20, 200, rl.YELLOW)
+	if vis.accumulator != -1 {
+        print_num_vertical(a, vis.accumulator, 100, 200, rl.ORANGE)
+	}
+	if vis.memory != 0 {
+		print_num_vertical(a, vis.memory, 180, 200, rl.LIME)
+	}
+
+    // display solar cells below the screen
 	for i: int = 0; i < 5; i += 1 {
 		rl.DrawRectangle(cast(i32)(40 + i * 56), 560, 48, 68, rl.DARKGRAY)
 		for j: int = 0; j < 4; j += 1 {
@@ -127,60 +165,34 @@ vis06_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 		10,
 		rl.Color{0, 255, 0, cast(u8)(128 + 127 * math.sin(cast(f32)(idx) * 0.5))},
 	)
-	// display current value and accumulator vertically
-	val_str := fmt.aprintf("%d", vis.value)
-	acc_str := fmt.aprintf("%d", vis.accumulator)
-	mem_str := fmt.aprintf("%d", vis.memory)
-	for i: int = 0; i < len(val_str); i += 1 {
-		asciiray_write_at(
-			a,
-			val_str[i:i + 1],
-			cast(i32)(20),
-			cast(i32)(200 + i * 32) + 4,
-			rl.YELLOW,
+
+	// highlight previously pressed button fading out
+	if vis.pa > 0 {
+		rl.DrawRectangle(
+			cast(i32)(vis.px * 40) - 24,
+			cast(i32)(vis.py * 48),
+			64,
+			40,
+			rl.Color({0, 255, 255, cast(u8)(vis.pa)}),
 		)
+		vis.pa -= 20
 	}
-	if vis.accumulator != -1 {
-		for i: int = 0; i < len(acc_str); i += 1 {
-			asciiray_write_at(
-				a,
-				acc_str[i:i + 1],
-				cast(i32)(100),
-				cast(i32)(200 + i * 32) + 4,
-				rl.ORANGE,
-			)
-		}
-	}
-	if vis.memory != 0 {
-		for i: int = 0; i < len(mem_str); i += 1 {
-			asciiray_write_at(
-				a,
-				mem_str[i:i + 1],
-				cast(i32)(200),
-				cast(i32)(200 + i * 32) + 4,
-				rl.RED,
-			)
-		}
-	}
-    // highlight previously pressed button fading out
-    if vis.pa > 0 {
-        rl.DrawRectangle(
-            cast(i32)(vis.px * 40) - 24,
-            cast(i32)(vis.py * 48),
-            64,
-            40,
-            rl.Color({0, 255, 255, cast(u8)(vis.pa)}),
-        )
-        vis.pa -= 20
-    }
+
+    // display vertical progress bar in the right side of the screen vertically
+    progress_height := cast(i32)(cast(f32)(vis.pos) / cast(f32)(len(vis.contents)) * 340.0)
+    rl.DrawRectangle(284, 204 + 340 - progress_height, 24, progress_height, rl.LIGHTGRAY)
+    rl.DrawRectangleLines(284, 204, 24, 340, rl.BLUE)
 	if idx % cast(uint)(vis.speed) != 0 {
+		make_noise(0, 0)
 		return false
 	}
+
 	if vis.pos >= len(vis.contents) {
-        if vis.delay == 20 {
-            return true
-        }
-        vis.delay += 1
+		if vis.delay == 20 {
+			return true
+		}
+		vis.delay += 1
+		make_noise(0, 0)
 		return false
 	}
 	// process next input character in vertical order fromm contents
@@ -189,6 +201,7 @@ vis06_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 	ch := vis.contents[row * vis.width + col]
 	vis.pos += 1
 	if ch == ' ' {
+		make_noise(0, 0)
 		return false
 	}
 	// increase speed every 10th keypress
@@ -211,28 +224,37 @@ vis06_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 		// process digit
 		if ch >= '0' && ch <= '9' {
 			vis.value = vis.value * 10 + int(ch - '0')
+			make_noise(int(ch - '0') * 8, 1)
 		} else if ch == 'M' {
 			vis.memory += vis.accumulator
 			vis.accumulator = -1
 			vis.value = 0
+			make_noise(90, 2)
 		} else if ch == 'R' {
 			vis.accumulator = vis.memory
 			vis.memory = 0
 			vis.value = 0
+			make_noise(90, 10)
 		} else if ch == '+' {
 			if vis.accumulator == -1 {
 				vis.accumulator = 0
 			}
 			vis.accumulator += vis.value
 			vis.value = 0
+			make_noise(90, 1)
 		} else if ch == '*' {
 			if vis.accumulator == -1 {
 				vis.accumulator = 1
 			}
 			vis.accumulator *= vis.value
 			vis.value = 0
+			make_noise(90, 1)
+		} else {
+			make_noise(0, 0)
 		}
-	}
+	} else {
+        make_noise(0, 0)        
+    }
 	return false
 }
 
@@ -240,5 +262,5 @@ vis06_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 VIS06 :: Handler {
 	init = vis06_init,
 	step = vis06_step,
-	window = Window{width = 360, height = 640, fps = 20, fsize = 32},
+	window = Window{width = 360, height = 640, fps = 30, fsize = 32},
 }

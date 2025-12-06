@@ -23,6 +23,7 @@ vis05_init :: proc(a: ^ASCIIRay) -> rawptr {
 	contents, ok := os.read_entire_file("inputs/day05.txt")
 	vis.nums = sol.fast_parse_all_integers(string(contents))[:]
 	vis.phase = 0
+    audio_init(a.v)
 	return vis
 }
 
@@ -76,6 +77,7 @@ vis05_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 		}
 	}
 	// display ranges so far
+    last_row := 0
 	for r in 0 ..< vis.ranges {
 		start := vis.nums[r * 2] / SCALE
 		end := vis.nums[r * 2 + 1] / SCALE
@@ -103,24 +105,35 @@ vis05_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 			// last line
 			rl.DrawLine(i32(0), i32(end / 1920), i32(end % 1920), i32(end / 1920), col)
 		}
+        last_row = end / 1920
 	}
 	match := 0
 	no_match := 0
 	if vis.phase == 1 {
 		// display samples
 		sample_idx := vis.ranges * 2
+        last_match := false
 		for sidx in sample_idx ..< min(int(idx), len(vis.nums)) {
 			sample := vis.nums[sidx] / SCALE
 			if vis.pixels[sample] > 0 {
 				rl.DrawCircle(i32(sample % 1920), i32(sample / 1920), 2, rl.GREEN)
 				match += 1
+                last_match = true
 			} else {
 				rl.DrawCircle(i32(sample % 1920), i32(sample / 1920), 2, rl.RED)
 				no_match += 1
+                last_match = false
 			}
 			rl.DrawCircle(i32(sample % 1920), i32(sample / 1920), 1, rl.BROWN)
 		}
-	}
+        if last_match {
+            make_noise(80, 1)
+        } else {
+            make_noise(20, 1)
+        }
+	} else {
+        make_noise(last_row / 20, 1)
+    }
 	asciiray_write_xy(a, fmt.tprintf("Scale: 1:%d", SCALE), 1, 0, rl.YELLOW)
 	// asciiray_write_xy(a, fmt.tprintf("Pixel count: %d", vis.pixel_count), 1, 1, rl.YELLOW)
 	asciiray_write_xy(

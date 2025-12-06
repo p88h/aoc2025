@@ -12,6 +12,8 @@ build/
 *~
 resources/*.ttf
 *.mp4
+*.m4v
+*.m4a
 
 # AOC stuff
 inputs/
