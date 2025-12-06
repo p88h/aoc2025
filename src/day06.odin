@@ -1,6 +1,5 @@
 package main
 
-import "core:strconv"
 import "core:testing"
 
 Day6Data :: struct {
