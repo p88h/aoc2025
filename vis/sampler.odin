@@ -109,6 +109,27 @@ make_beep :: proc(frequency: f32, volume: f32, duration: f32) {
 	}
 }
 
+// Modulate frequency based on target frequency over time 
+make_fm_sounds:: proc(target: []int, scale: f32) {
+	samples := g_state.frame_len
+	prev_freq := f32(0.0)
+	for k: uint = 0; k < cast(uint)samples; k += 1 {
+		target_freq_index := cast(int)(cast(f32)(k) / cast(f32)(samples) * cast(f32)(len(target)-1))
+		freq1 := 340.0 * f32(math.log2(cast(f64)(target[target_freq_index])))
+		freq2 := 340.0 * f32(math.log2(cast(f64)(target[target_freq_index+1])))
+		frequency := freq1 / 2 + freq2 / 2
+		t: f32 = cast(f32)(k) / 48000.0
+		sample := cast(c.short)(math.sin(t * frequency * 2.0 * math.PI) * 32767.0)
+		g_state.sbuf[(g_state.wpos + k) % 80000] = sample
+		g_state.fbuf[k] = sample
+	}
+	g_state.wpos = (g_state.wpos + cast(uint)samples) % 80000
+	if g_state.ff_pipe.running {
+		raw_bytes := mem.slice_data_cast([]byte, g_state.fbuf[0:g_state.frame_len])
+		ffpipe_put(&g_state.ff_pipe, raw_data(raw_bytes), cast(i32)len(raw_bytes))
+	}
+}
+
 audio_init :: proc(v: ^Viewer) {
 	rl.InitAudioDevice()
 	g_state.audio_stream = rl.LoadAudioStream(48000, 16, 1)

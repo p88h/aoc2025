@@ -52,6 +52,8 @@ vis07_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
         limit = len(vis.lines) - 1
         vis.delay += 1
     }
+    total := 0
+    splits := 0
 	for i in 0 ..= limit {
         step := cell if vis.delay > 0 || i < limit else int(idx) % cell
         // step = (step * step) / cell // ease out
@@ -74,14 +76,25 @@ vis07_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 					rl.Vector2{f32(x * cell + cell + cell / 2), f32(i * cell + cell)},
 					rl.Color{255,128,255,alpha},
 				)
+                splits += 1
 			} else {
 				next_beams[x] += beams[x]
 				// draw one line straight down
 				rl.DrawLine(i32(sx), i32(sy), i32(sx), i32(sy + step), rl.LIGHTGRAY)
 			}
 		}
-		for j in 0 ..< len(beams) do beams[j] = next_beams[j]
+        total = 0
+		for j in 0 ..< len(beams) { 
+            beams[j] = next_beams[j]
+            total += beams[j]
+        }
 	}
+    // display total beams in the top left corner
+    split_str := fmt.tprintf("Total splits: %d", splits)
+    asciiray_write_xy(a, split_str, 1, 1, rl.YELLOW)
+    beam_str := fmt.tprintf("Unique beams: %d", total)
+    asciiray_write_xy(a, beam_str, 1, 2, rl.YELLOW)
+
 	return vis.delay > 100
 }
 
