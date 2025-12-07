@@ -37,6 +37,22 @@
             }
         },
         {
+            "label": "odin: test debug",
+            "type": "shell",
+            "command": "make",
+            "args": ["test-debug"],
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            }
+        },
+        {
             "label": "odin: build release",
             "type": "shell",
             "command": "make",

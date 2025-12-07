@@ -19,6 +19,14 @@ release: | $(BUILD_DIR)
 debug: | $(BUILD_DIR)
 	$(ODIN) build $(SRC_DIR) -out:$(BUILD_DIR)/aoc2025 -debug
 
+# Build the main executable
+test: | $(BUILD_DIR)
+	$(ODIN) test $(SRC_DIR) -out:$(BUILD_DIR)/test_aoc2025 -keep-executable
+
+# Build with debug symbols
+test-debug: | $(BUILD_DIR)
+	$(ODIN) test $(SRC_DIR) -out:$(BUILD_DIR)/test_aoc2025 -debug -keep-executable || true
+
 # Create build directory
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)

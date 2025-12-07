@@ -11,6 +11,15 @@
             "preLaunchTask": "odin: build debug"
         },
         {
+            "name": "Debug Odin Tests",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/test_aoc2025",
+            "args": ["${fileBasenameNoExtension}", "debug"],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "odin: test debug"
+        },
+        {
             "name": "Run Odin Program",
             "type": "lldb",
             "request": "launch",
