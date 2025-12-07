@@ -6,13 +6,15 @@ Odin: `dev-2025-11-nightly`, build flags: `-o:speed`
 
 ```
         parse   part1   part2   total
-day 01: 52.0 µs 10.9 µs 13.9 µs 76.9 µs (+-1%) iter=31010    
-day 02: 1.9 µs  0.1 µs  0.4 µs  2.4 µs  (+-7%) iter=98110     
-day 03: 65.0 µs 2.7 µs  15.3 µs 83.1 µs (+-1%) iter=69110     
-day 04: 85.0 µs 6.1 µs  0.1 ms  0.2 ms  (+-2%) iter=9910    
-day 05: 56.4 µs 4.8 µs  0.1 µs  61.3 µs (+-1%) iter=24110    
+day 01: 49.4 µs 11.1 µs 13.6 µs 74.2 µs (+-1%) iter=21010    
+day 02: 1.8 µs  0.1 µs  0.4 µs  2.4 µs  (+-6%) iter=98110     
+day 03: 65.0 µs 2.5 µs  15.7 µs 83.3 µs (+-1%) iter=89110     
+day 04: 91.0 µs 5.3 µs  0.1 ms  0.2 ms  (+-1%) iter=1510    
+day 05: 55.4 µs 4.3 µs  0.1 µs  59.9 µs (+-1%) iter=19110    
+day 06: 16.4 µs 8.3 µs  7.1 µs  32.0 µs (+-1%) iter=34110    
+day 07: 15.5 µs 17.0 µs 15.4 µs 48.0 µs (+-0%) iter=19110    
 
-Total time:     0.4 ms
+Total time:     0.5 ms
 ```
 
 CPU: Apple M3 Max (12+4 cores)
