@@ -90,6 +90,8 @@ vis07_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
         }
 	}
     // display total beams in the top left corner
+    line_str := fmt.tprintf("Current row: %d", limit)
+    asciiray_write_xy(a, line_str, 1, 0, rl.YELLOW)
     split_str := fmt.tprintf("Total splits: %d", splits)
     asciiray_write_xy(a, split_str, 1, 1, rl.YELLOW)
     beam_str := fmt.tprintf("Unique beams: %d", total)
