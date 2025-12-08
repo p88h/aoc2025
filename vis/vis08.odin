@@ -14,6 +14,7 @@ VisState :: struct {
 	camera: rl.Camera3D,
 	angle:  f32, // current orbit angle
     conns:  [dynamic]int,
+    color:  [dynamic]rl.Color,
 }
 
 @(private = "file")
@@ -35,6 +36,11 @@ vis08_init :: proc(a: ^ASCIIRay) -> rawptr {
 		fovy       = 45,
 		projection = .PERSPECTIVE,
 	}
+    for i in 0 ..< len(vis.data.points) {
+        c := sol.day8_find(vis.data, i)
+        col := rl.Color{u8((c * 37) % 256), u8((c * 59) % 256), u8((c * 83) % 256), 255}
+        append(&vis.color, col)
+    }
 	return vis
 }
 
@@ -48,21 +54,18 @@ vis08_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 	vis.camera.position.y = CENTER + DIST * 0.5 // keep height constant
 
 	rl.BeginMode3D(vis.camera)
-    // execute step of the joining process
-	pos := min(int(idx), len(vis.data.wires) - 1)
-	wire := vis.data.wires[pos]
-    // check if already connected
-    sa := sol.day8_find(vis.data, wire.a)
-    sb := sol.day8_find(vis.data, wire.b)
-    if sa != sb {
-	    append(&vis.conns, pos)
-	    sol.day8_union(vis.data, wire.a, wire.b)
-    }
 	// Draw all points in  3D space
 	for p,idx in vis.data.points {
 		// color based on the cluster number
 		c := sol.day8_find(vis.data, idx)
-		col := rl.Color{u8((c * 37) % 256), u8((c * 59) % 256), u8((c * 83) % 256), 255}
+		tgt_col := rl.Color{u8((c * 37) % 256), u8((c * 59) % 256), u8((c * 83) % 256), 255}
+        col := vis.color[idx]
+        // simple color lerp for smooth transition
+        col.r = u8((int(col.r) * 7 + int(tgt_col.r)) / 8)
+        col.g = u8((int(col.g) * 7 + int(tgt_col.g)) / 8)
+        col.b = u8((int(col.b) * 7 + int(tgt_col.b)) / 8)
+        vis.color[idx] = col
+
 		rl.DrawCube(
 			rl.Vector3{f32(p.x) * SCALE, f32(p.y) * SCALE, f32(p.z) * SCALE},
 			0.3,
@@ -71,13 +74,16 @@ vis08_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 			col,
 		)
 	}
+
+    pos := min(int(idx), len(vis.data.wires) - 1)
 	// draw last 25 evaluated wires with fading effect
-	start_pos := max(pos - 25, 0)
+	start_pos := max(pos - 30, 0)
 	for i in start_pos ..= pos {
 		wire := vis.data.wires[i]
         pa := vis.data.points[wire.a]
-        pb := vis.data.points[wire.b]
-        alpha := u8((int(idx) - i) * 10) // fade out
+        pb := vis.data.points[wire.b]        
+        fade := f32(int(idx) - i - 15) / 16.0
+        alpha := u8(255 * (1 - fade*fade))
         color := rl.Color{255, 255, 255, alpha}
         rl.DrawLine3D(
             rl.Vector3{f32(pa.x) * SCALE, f32(pa.y) * SCALE, f32(pa.z) * SCALE},
@@ -85,6 +91,20 @@ vis08_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
             color,
         )
     }
+
+    // execute step of the joining process
+    if pos >= 15 {
+        pos -= 15
+        wire := vis.data.wires[pos]
+        // check if already connected
+        sa := sol.day8_find(vis.data, wire.a)
+        sb := sol.day8_find(vis.data, wire.b)
+        if sa != sb {
+            append(&vis.conns, pos)
+            sol.day8_union(vis.data, wire.a, wire.b)
+        }
+    }
+
 	// draw already connected wires
 	for i in vis.conns {
 		wire := vis.data.wires[i]
@@ -92,7 +112,7 @@ vis08_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 		pb := vis.data.points[wire.b]
 		// color based on the cluster number
 		c := sol.day8_find(vis.data, wire.a)
-		col := rl.Color{u8((c * 37) % 256), u8((c * 59) % 256), u8((c * 83) % 256), 255}
+		col := vis.color[wire.a]
 		rl.DrawLine3D(
 			rl.Vector3{f32(pa.x) * SCALE, f32(pa.y) * SCALE, f32(pa.z) * SCALE},
 			rl.Vector3{f32(pb.x) * SCALE, f32(pb.y) * SCALE, f32(pb.z) * SCALE},
@@ -113,12 +133,12 @@ vis08_step :: proc(ctx: rawptr, a: ^ASCIIRay, idx: uint) -> bool {
 	if idx >= uint(len(vis.data.wires)) {
 		vis.delay += 1
 	}
-	return vis.delay > 25
+	return vis.delay > 30
 }
 
 // Boilerplate handler for the example visualization
 VIS08 :: Handler {
 	init = vis08_init,
 	step = vis08_step,
-	window = Window{width = 640, height = 640, fps = 60, fsize = 24},
+	window = Window{width = 1024, height = 768, fps = 30, fsize = 20},
 }
