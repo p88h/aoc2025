@@ -2,7 +2,9 @@ package main
 
 import "core:fmt"
 import "core:math"
+import "core:sync"
 import "core:testing"
+import "core:thread"
 
 @(private = "file")
 Point3D :: struct {
@@ -20,9 +22,15 @@ Wire :: struct {
 	b:    int,
 }
 
+@(private = "file")
+SHARDS :: 12
+
 Day8Data :: struct {
-	points: []Point3D,
-	wires:  [dynamic]Wire,
+	points:  []Point3D,
+	wires:   []Wire,
+	shards:  [SHARDS][dynamic]Wire,
+	buckets: [][dynamic]int,
+	group:   sync.Wait_Group,
 }
 
 @(private = "file")
@@ -51,33 +59,11 @@ bucket_index :: #force_inline proc(p: ^Point3D) -> int {
 	return bx * BDIM * BDIM + by * BDIM + bz
 }
 
-day08 :: proc(contents: string) -> Solution {
-	data := new(Day8Data)
-	nums := fast_parse_all_integers(contents)
-	data.points = make([]Point3D, len(nums) / 3)
-	// represents a spatial partitioning of points into buckets
-	buckets := make([][dynamic]int, BDIM * BDIM * BDIM)
-	for i in 0 ..< len(nums) / 3 {
-		p := Point3D {
-			x = nums[i * 3 + 0],
-			y = nums[i * 3 + 1],
-			z = nums[i * 3 + 2],
-			s = i,
-			c = 1,
-		}
-		// assign to bucket
-		bidx := bucket_index(&p)
-		append(&buckets[bidx], i)
-		data.points[i] = p
-	}
-	// generate all possible wires (connections) between points
-	data.wires = make([dynamic]Wire)
-	idx := 0
-	scan_cnt := 0
-	gen_cnt := 0
+make_wires_shard :: proc(data: ^Day8Data, shard: int) {
 	// limit the search space fruther to ~ diagonal of the cube)
 	MAX_DISTANCE: u32 = 15_000_000
 	for i in 0 ..< len(data.points) {
+		if i % SHARDS != shard do continue
 		bx := data.points[i].x / BSCALE
 		by := data.points[i].y / BSCALE
 		bz := data.points[i].z / BSCALE
@@ -89,12 +75,10 @@ day08 :: proc(contents: string) -> Solution {
 			for byi in bye ..= bys {
 				for bzi in bze ..= bzs {
 					bidx := bxi * BDIM * BDIM + byi * BDIM + bzi
-					for j in buckets[bidx] {
-						scan_cnt += 1
+					for j in data.buckets[bidx] {
 						if j <= i {
 							continue
 						}
-						gen_cnt += 1
 						dist := distance(&data.points[i], &data.points[j])
 						if dist > MAX_DISTANCE {
 							continue
@@ -104,15 +88,58 @@ day08 :: proc(contents: string) -> Solution {
 							b    = j,
 							dist = dist,
 						}
-						append(&data.wires, wire)
+						append(&data.shards[shard], wire)
 					}
 				}
 			}
 		}
 	}
-	// fmt.println("Scanned", scan_cnt, "point pairs, considered", gen_cnt, "wires, generated", len(data.wires), "wires")
+}
+
+day08 :: proc(contents: string) -> Solution {
+	data := new(Day8Data)
+	nums := fast_parse_all_integers(contents)
+	data.points = make([]Point3D, len(nums) / 3)
+	// represents a spatial partitioning of points into buckets
+	data.buckets = make([][dynamic]int, BDIM * BDIM * BDIM)
+	for i in 0 ..< len(nums) / 3 {
+		p := Point3D {
+			x = nums[i * 3 + 0],
+			y = nums[i * 3 + 1],
+			z = nums[i * 3 + 2],
+			s = i,
+			c = 1,
+		}
+		// assign to bucket
+		bidx := bucket_index(&p)
+		append(&data.buckets[bidx], i)
+		data.points[i] = p
+	}
+	// generate all possible wires (connections) between points	
+	task_proc :: proc(t: thread.Task) {
+		data := cast(^Day8Data)t.data
+		shard := t.user_index
+		make_wires_shard(data, shard)
+		sync.wait_group_done(&data.group)
+	}
+	for shard in 0 ..< SHARDS {
+		sync.wait_group_add(&data.group, 1)
+		thread.pool_add_task(&global_thread_pool, context.allocator, task_proc, data, shard)
+	}
+	sync.wait_group_wait(&data.group)
+	total := 0
+	for shard in 0 ..< SHARDS {
+		total += len(data.shards[shard])
+	}
+	data.wires = make([]Wire, total)
+	// merge shards
+	ofs := 0
+	for shard in 0 ..< SHARDS {
+		copy(data.wires[ofs:], data.shards[shard][:])
+		ofs += len(data.shards[shard])
+	}
 	// sort wires by distance
-	radix_sort(data.wires[:], 4)
+	radix_sort(data.wires, 3)
 	return Solution{data = data, part1 = part1, part2 = part2}
 }
 

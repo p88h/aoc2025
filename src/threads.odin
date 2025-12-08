@@ -2,7 +2,6 @@ package main
 
 import "core:thread"
 
-@(private = "file")
 global_thread_pool : thread.Pool
 NUM_THREADS :: 6
 
