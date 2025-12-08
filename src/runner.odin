@@ -19,7 +19,7 @@ print_time :: proc(t: u64, fmax: u64 = 99) {
 		d = d / 1000
 		ui += 1
 	}
-	fmt.printf("\t%d.%d %s", d, r, units[ui])
+	fmt.printf(" % 2d.%d %s", d, r, units[ui])
 }
 
 // Compare TimeVecs by total time (last element)
@@ -90,7 +90,7 @@ run_day :: proc(day: int, runner: DayRunner, contents: string, single: bool = fa
 			for i in 0 ..< 4 {
 				print_time(times[mid][i])
 			}
-			fmt.printf(" (+-%d%%) iter=%d    ", delta, total_iter)
+			fmt.printf(" (+-%d%%) iter=%d", delta, total_iter)
 
 			if delta <= 1 {
 				break
@@ -100,7 +100,7 @@ run_day :: proc(day: int, runner: DayRunner, contents: string, single: bool = fa
 			for i in 0 ..< 4 {
 				print_time(times[mid][i])
 			}
-			fmt.printf(" (...%d) iter=%d    ", 9 - cnk, total_iter)
+			fmt.printf(" (...%d) iter=%d", 9 - cnk, total_iter)
 		}
 
 		// Increase iterations if fast enough
@@ -109,7 +109,7 @@ run_day :: proc(day: int, runner: DayRunner, contents: string, single: bool = fa
 		}
 
 		if single {
-			fmt.printf("    p1:[%d] p2:[%d]      ", a1, a2)
+			fmt.printf("    p1:[%d] p2:[%d]    ", a1, a2)
 		}
 	}
 
