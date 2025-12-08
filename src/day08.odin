@@ -39,9 +39,6 @@ BDIM :: 10
 // search this many cubes in each direction from the current points cube
 @(private = "file")
 BOFS :: 1
-// max number of points per bucket
-@(private = "file")
-BMAX :: 6
 // dimensions are in range 0..99999
 @(private = "file")
 BSCALE := 100000 / BDIM
@@ -59,8 +56,7 @@ day08 :: proc(contents: string) -> Solution {
 	nums := fast_parse_all_integers(contents)
 	data.points = make([]Point3D, len(nums) / 3)
 	// represents a spatial partitioning of points into buckets
-	buckets := make([]int, BDIM * BDIM * BDIM * BMAX)
-	mlen := 0
+	buckets := make([][dynamic]int, BDIM * BDIM * BDIM)
 	for i in 0 ..< len(nums) / 3 {
 		p := Point3D {
 			x = nums[i * 3 + 0],
@@ -71,15 +67,9 @@ day08 :: proc(contents: string) -> Solution {
 		}
 		// assign to bucket
 		bidx := bucket_index(&p)
-		blen := buckets[bidx * BMAX] + 1
-		buckets[bidx * BMAX + blen] = i
-		buckets[bidx * BMAX] = blen
-		if blen > mlen {
-			mlen = blen
-		}
+		append(&buckets[bidx], i)
 		data.points[i] = p
 	}
-	//fmt.println("Max bucket size:", mlen)
 	// generate all possible wires (connections) between points
 	data.wires = make([dynamic]Wire)
 	idx := 0
@@ -99,8 +89,7 @@ day08 :: proc(contents: string) -> Solution {
 			for byi in bye ..= bys {
 				for bzi in bze ..= bzs {
 					bidx := bxi * BDIM * BDIM + byi * BDIM + bzi
-					for k in 0 ..< buckets[bidx * BMAX] {
-						j := buckets[bidx * BMAX + 1 + k]
+					for j in buckets[bidx] {
 						scan_cnt += 1
 						if j <= i {
 							continue
@@ -154,9 +143,12 @@ _union :: proc(data: ^Day8Data, a: int, b: int) {
 }
 
 @(private = "file")
+MAX_CONNS := 1000
+
+@(private = "file")
 part1 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day8Data)raw_data
-	for conn in 0 ..< 1000 {
+	for conn in 0 ..< MAX_CONNS {
 		_union(data, data.wires[conn].a, data.wires[conn].b)
 	}
 	// compute the sizes of top three largest components
@@ -181,7 +173,7 @@ part2 :: proc(raw_data: rawptr) -> int {
 	last_size := 0
 	last_res := 0
 	last_dist := u32(0)
-	conn := 1000
+	conn := MAX_CONNS
 	for last_size < len(data.points) {
 		a := data.wires[conn].a
 		b := data.wires[conn].b
@@ -221,6 +213,7 @@ test_day08 :: proc(t: ^testing.T) {
 		"425,690,689\n"
 	defer setup_test_allocator()()
 	solution := day08(input)
+	MAX_CONNS = 10
 	testing.expect_value(t, solution.part1(solution.data), 40)
-	// testing.expect_value(t, solution.part2(solution.data), 12)
+	testing.expect_value(t, solution.part2(solution.data), 25272)
 }
