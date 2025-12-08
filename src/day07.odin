@@ -72,6 +72,6 @@ test_day07 :: proc(t: ^testing.T) {
 		"..............."
 	defer setup_test_allocator()()
 	solution := day07(input)
-	//testing.expect_value(t, solution.part1(solution.data), 21)
-	//testing.expect_value(t, solution.part2(solution.data), 40)
+	testing.expect_value(t, solution.part1(solution.data), 21)
+	testing.expect_value(t, solution.part2(solution.data), 40)
 }
