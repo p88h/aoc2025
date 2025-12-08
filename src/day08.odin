@@ -134,18 +134,17 @@ day08 :: proc(contents: string) -> Solution {
 	return Solution{data = data, part1 = part1, part2 = part2}
 }
 
-@(private = "file")
-_find :: proc(data: ^Day8Data, x: int) -> int {
+
+day8_find :: proc(data: ^Day8Data, x: int) -> int {
 	if data.points[x].s != x {
-		data.points[x].s = _find(data, data.points[x].s)
+		data.points[x].s = day8_find(data, data.points[x].s)
 	}
 	return data.points[x].s
 }
 
-@(private = "file")
-_union :: proc(data: ^Day8Data, a: int, b: int) {
-	pa := _find(data, a)
-	pb := _find(data, b)
+day8_union :: proc(data: ^Day8Data, a: int, b: int) {
+	pa := day8_find(data, a)
+	pb := day8_find(data, b)
 	if pa != pb {
 		// swap to keep pa as the larger component
 		if data.points[pa].c < data.points[pb].c {
@@ -167,7 +166,7 @@ MAX_CONNS := 1000
 part1 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day8Data)raw_data
 	for conn in 0 ..< MAX_CONNS {
-		_union(data, data.wires[conn].a, data.wires[conn].b)
+		day8_union(data, data.wires[conn].a, data.wires[conn].b)
 	}
 	// compute the sizes of top three largest components
 	top3: [3]int = {0, 0, 0}
@@ -195,8 +194,8 @@ part2 :: proc(raw_data: rawptr) -> int {
 	for last_size < len(data.points) {
 		a := data.wires[conn].a
 		b := data.wires[conn].b
-		_union(data, a, b)
-		last_size = data.points[_find(data, a)].c
+		day8_union(data, a, b)
+		last_size = data.points[day8_find(data, a)].c
 		last_res = data.points[a].x * data.points[b].x
 		last_dist = data.wires[conn].dist
 		conn += 1
