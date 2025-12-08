@@ -8,6 +8,8 @@ import "core:strings"
 DAY_RUNNERS :: [?]DayRunner{day01, day02, day03, day04, day05, day06, day07, day08}
 
 main :: proc() {
+	init_threads()
+	defer stop_threads()
 	args := os.args
 	day_num: int = 0
 	debug := false
