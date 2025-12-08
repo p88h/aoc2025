@@ -6,52 +6,46 @@ Day7Data :: struct {
 	pos: int,
 	grid: []byte,
     width: int,
+	beams: []int,
 }
 
 day07 :: proc(contents: string) -> Solution {
 	data := new(Day7Data)
     width := strings.index(contents, "\n") + 1
 	data.pos = strings.index(contents, "S");
-    // copy the contents to a grid(byte array), where ^ maps to 2 and . maps to 1
-    data.grid = make([]byte, len(contents))
-    for i in 0 ..< len(data.grid) do data.grid[i] = byte(contents[i]) / 45
+    data.grid = transmute([]byte)contents
     data.width = width
 	return Solution{data = data, part1 = part1, part2 = part2}
 }
 
-
-@(private = "file")
-compute_beams :: #force_inline proc(data: ^Day7Data, $check: bool) -> (int, []int) {
-    width := data.width
-	beams := make([]int, width)
-	next_beams := make([]int, width)
-	splits := 0
-    beams[data.pos] = 1
-	for ofs:= 0; ofs < len(data.grid); ofs += width {
-        line := data.grid[ofs:ofs+width]
-		for i in 0 ..< width do next_beams[i] = beams[i] * int(line[i] & 1)
-		for i in 1 ..< width - 1 {
-            lr := int(line[i] >> 1)
-            next_beams[i-1] += beams[i] * lr 
-            next_beams[i+1] += beams[i] * lr 
-            if check && beams[i] > 0 { splits += lr }
-        }
-		for i in 0 ..< width do beams[i] = next_beams[i]
-	}
-	return splits, beams
-}
-
 @(private = "file")
 part1 :: proc(raw_data: rawptr) -> int {
-	splits, _ := compute_beams(cast(^Day7Data)raw_data, true)
+	data := cast(^Day7Data)raw_data
+    width := data.width
+	beams := make([]int, width)
+	splits := 0
+    beams[data.pos] = 1
+	start := data.pos
+	end := data.pos + 1
+	for ofs:= width * 2; ofs < len(data.grid); ofs += width * 2 {
+		for i in start ..< end do if beams[i] > 0 && data.grid[ofs + i] == '^' {
+            beams[i-1] += beams[i]
+            beams[i+1] += beams[i]
+			beams[i] = 0
+            splits += 1
+        }
+		start -= 1
+		end += 1
+	}
+	data.beams = beams
 	return splits
 }
 
 @(private = "file")
 part2 :: proc(raw_data: rawptr) -> int {
-	_, beams := compute_beams(cast(^Day7Data)raw_data, false)
+	data := cast(^Day7Data)raw_data
 	ret := 0
-	for b in beams {
+	for b in data.beams {
 		ret += b
 	}
 	return ret
