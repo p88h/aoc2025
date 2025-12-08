@@ -15,6 +15,7 @@ $ odin run src -- 4
 ```
 
 There are also some Makefile targets, you can use `make help` to list what that does. 
+You can pass odin flags like `o:speed` before `--`
 
 Benchmarking
 ============
@@ -22,6 +23,31 @@ Benchmarking
 Automatic, the runner always benchmarks the results.
 
 Reference benchmark results are added here as well (BENCHMARKS.md)
+Some solutions use multi-threaded execution which is automatically enabled.
+
+Tests
+=====
+
+Each day has test code that is basically the test input validation. You can run this via either:
+
+```
+$ make test
+$ odin test src
+```
+
+Additional options
+==================
+
+You can pass additional options (after `--`) to the runner:
+* `debug` disables benchmarking and runs the specific day only once. Mostly useful when debugging. 
+* `single` disables multi-threading. Note `debug` mode does not use multithreading as well. 
+
+```
+# run day 5 in debug mode
+$ odin run src -- 5 debug
+# run all days single threaded
+$ odin run src -o:speed -- single
+```
 
 Visualisations
 ==============

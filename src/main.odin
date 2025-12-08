@@ -8,14 +8,17 @@ import "core:strings"
 DAY_RUNNERS :: [?]DayRunner{day01, day02, day03, day04, day05, day06, day07, day08}
 
 main :: proc() {
-	init_threads()
-	defer stop_threads()
 	args := os.args
 	day_num: int = 0
 	debug := false
+	threading := true
 	for ap := 1; ap < len(args); ap += 1 {
 		if args[ap] == "debug" {
 			debug = true
+			continue
+		}
+		if args[ap] == "single" {
+			threading = false
 			continue
 		}
 		stripped := strings.trim_left_proc(args[ap], proc(r: rune) -> bool {
@@ -47,6 +50,9 @@ main :: proc() {
 		fmt.println("Part 2 result:", ctx.part2(ctx.data))
 		return
 	}
+
+	init_threads(threading)
+	defer stop_threads()
 
 	// print result header
 	fmt.printf("        parse   part1   part2   total\n")

@@ -59,6 +59,8 @@ bucket_index :: #force_inline proc(p: ^Point3D) -> int {
 	return bx * BDIM * BDIM + by * BDIM + bz
 }
 
+// generate all possible wires (connections) between points	
+@(private = "file")
 make_wires_shard :: proc(data: ^Day8Data, shard: int) {
 	// limit the search space fruther to ~ diagonal of the cube)
 	MAX_DISTANCE: u32 = 15_000_000
@@ -114,19 +116,8 @@ day08 :: proc(contents: string) -> Solution {
 		bidx := bucket_index(&p)
 		append(&data.buckets[bidx], i)
 		data.points[i] = p
-	}
-	// generate all possible wires (connections) between points	
-	task_proc :: proc(t: thread.Task) {
-		data := cast(^Day8Data)t.data
-		shard := t.user_index
-		make_wires_shard(data, shard)
-		sync.wait_group_done(&data.group)
-	}
-	for shard in 0 ..< SHARDS {
-		sync.wait_group_add(&data.group, 1)
-		thread.pool_add_task(&global_thread_pool, context.allocator, task_proc, data, shard)
-	}
-	sync.wait_group_wait(&data.group)
+	}	
+    run_shards(SHARDS, data, make_wires_shard)
 	total := 0
 	for shard in 0 ..< SHARDS {
 		total += len(data.shards[shard])
