@@ -90,7 +90,7 @@ run_day :: proc(day: int, runner: DayRunner, contents: string, single: bool = fa
 			for i in 0 ..< 4 {
 				print_time(times[mid][i])
 			}
-			fmt.printf(" (+-%d%%) iter=%d", delta, total_iter)
+			fmt.printf(" (+-%d%%) iter=%d  ", delta, total_iter)
 
 			if delta <= 1 {
 				break
@@ -100,7 +100,7 @@ run_day :: proc(day: int, runner: DayRunner, contents: string, single: bool = fa
 			for i in 0 ..< 4 {
 				print_time(times[mid][i])
 			}
-			fmt.printf(" (...%d) iter=%d", 9 - cnk, total_iter)
+			fmt.printf(" (...%d) iter=%d  ", 9 - cnk, total_iter)
 		}
 
 		// Increase iterations if fast enough
