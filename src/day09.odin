@@ -40,14 +40,17 @@ part1 :: proc(raw_data: rawptr) -> int {
 	return ret
 }
 
-@(private = "file")
-scan_from :: proc(data: ^Day9Data, i: int, kdir: int) -> int {
+day9_scan_from :: proc(data: ^Day9Data, i: int, kdir: int, limit: int) -> (int,int) {
+	limit := limit
 	j := i
 	k := 0 if kdir > 0 else data.len - 1
 	maxx := 0
 	x1, y1 := data.nums[i * 2], data.nums[i * 2 + 1]
 	ret := 0
+	best := i
 	for {
+		limit -= 1
+		if limit < 0 do break
 		j -= kdir
 		x2, y2 := data.nums[j * 2], data.nums[j * 2 + 1]
 		if x2 < maxx do continue
@@ -58,9 +61,12 @@ scan_from :: proc(data: ^Day9Data, i: int, kdir: int) -> int {
 		}
 		if data.nums[k * 2] < x1 do break
 		area := (abs(x2 - x1) + 1) * (abs(y2 - y1) + 1)
-		ret = max(ret, area)
+		if area > ret {
+			ret = area
+			best = j
+		}
 	}
-	return ret
+	return ret,best
 }
 
 @(private = "file")
@@ -68,8 +74,8 @@ part2 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day9Data)raw_data
     // 248 & 249 are the indexes of the two points inside the circle
     // ... could probably be found programmatically ?
-	ret1 := scan_from(data, data.pos, 1)
-	ret2 := scan_from(data, data.pos + 1, -1)
+	ret1,_ := day9_scan_from(data, data.pos, 1, 100)
+	ret2,_ := day9_scan_from(data, data.pos + 1, -1, 100)
 	return max(ret1, ret2)
 }
 
