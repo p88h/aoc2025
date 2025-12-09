@@ -6,17 +6,17 @@ Odin: `dev-2025-11-nightly`, build flags: `-o:speed`
 
 ```
         parse   part1   part2   total
-day 01: 49.6 µs 10.8 µs 14.3 µs 74.8 µs (+-1%) iter=19110
-day 02:  1.8 µs  0.1 µs  0.4 µs  2.4 µs (+-7%) iter=981100
-day 03: 65.3 µs  2.7 µs 14.8 µs 82.9 µs (+-1%) iter=641100
-day 04: 94.0 µs  6.0 µs  0.1 ms  0.2 ms (+-1%) iter=1510
-day 05: 55.2 µs  4.2 µs  0.1 µs 59.5 µs (+-1%) iter=29110
-day 06: 17.3 µs  8.1 µs  6.7 µs 32.2 µs (+-1%) iter=741100
-day 07: 37.0 ns  3.3 µs 30.0 ns  3.4 µs (+-2%) iter=981100
-day 08:  0.3 ms 11.0 µs 45.9 µs  0.4 ms (+-1%) iter=15100
-day 09: 11.4 µs  2.8 µs  0.2 µs 14.5 µs (+-0%) iter=9110
+day 01: 52.9 µs 10.9 µs 13.4 µs 77.4 µs (+-1%) iter=9110  
+day 02:  1.6 µs  0.1 µs  0.4 µs  2.2 µs (+-3%) iter=98110   
+day 03: 65.3 µs  2.8 µs 15.1 µs 83.3 µs (+-2%) iter=98110  
+day 04: 92.9 µs  5.8 µs  0.1 ms  0.2 ms (+-1%) iter=9010  
+day 05: 56.8 µs  4.1 µs  0.1 µs 61.2 µs (+-1%) iter=14110  
+day 06: 18.4 µs  8.1 µs  6.4 µs 32.9 µs (+-1%) iter=19110  
+day 07: 39.0 ns  3.3 µs 31.0 ns  3.4 µs (+-3%) iter=98110   
+day 08:  0.3 ms 10.6 µs 45.0 µs  0.4 ms (+-1%) iter=2010   
+day 09: 11.3 µs  2.8 µs  0.1 µs 14.3 µs (+-1%) iter=9110  
 
-Total time:   0.8 ms
+Total time:   0.9 ms
 ```
 
 CPU: Apple M3 Max (12+4 cores)
