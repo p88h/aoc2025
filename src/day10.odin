@@ -7,9 +7,8 @@ import "core:testing"
 MachineConfig :: struct {
 	mask:       u16,
 	buttons:    []u16,
-	button_mat: [][]i32, // Button matrix B (each row is a button's coefficients)
-	joltage:    []i32,   // Target joltage vector J
-    res1:       int,
+	joltage:    []i32, // Target joltage vector J
+	res1:       int,
 	res2:       int,
 }
 
@@ -25,9 +24,10 @@ day10 :: proc(contents: string) -> Solution {
 	for line, i in lines {
 		parts := strings.split(line, " ")
 		mask_str := parts[0][1:len(parts[0]) - 1]
+		cfg := &data.lines[i]
 		for k in 0 ..< len(mask_str) {
 			if mask_str[k] == '#' {
-				data.lines[i].mask |= (1 << u16(k))
+				cfg.mask |= (1 << u16(k))
 			}
 		}
 
@@ -35,30 +35,20 @@ day10 :: proc(contents: string) -> Solution {
 		joltage_str := parts[len(parts) - 1]
 		joltages := fast_parse_all_integers(joltage_str[1:len(joltage_str) - 1])
 		ncols := len(joltages) // Number of positions (joltage values)
-		data.lines[i].joltage = make([]i32, ncols)
+		cfg.joltage = make([]i32, ncols)
 		for val, pos in joltages {
-			data.lines[i].joltage[pos] = i32(val)
+			cfg.joltage[pos] = i32(val)
 		}
 
 		// Parse buttons - number of rows (unknowns to solve for)
 		nrows := len(parts) - 2
-		data.lines[i].buttons = make([]u16, nrows)
-		
-		// Create matrix: rows = buttons, cols = positions
-		// B[button][pos] = 1 if button affects position pos
-		data.lines[i].button_mat = make([][]i32, nrows)
-		for row in 0 ..< nrows {
-			data.lines[i].button_mat[row] = make([]i32, ncols)
-		}
-		
+		cfg.buttons = make([]u16, nrows)
+
 		for j in 1 ..< len(parts) - 1 {
 			wires := fast_parse_all_integers(parts[j][1:len(parts[j]) - 1])[:]
 			button_idx := j - 1
 			for b in wires {
-				data.lines[i].buttons[button_idx] |= (1 << u16(b))
-				if b < ncols {
-					data.lines[i].button_mat[button_idx][b] = 1
-				}
+				cfg.buttons[button_idx] |= (1 << u16(b))
 			}
 		}
 	}
@@ -72,7 +62,7 @@ bfs1 :: proc(config: ^MachineConfig) -> int {
 	visited := [1024]int{}
 	visited[0] = 1
 	idx := 0
-    cnt := 1
+	cnt := 1
 	for idx < cnt {
 		state := states[idx]
 		idx += 1
@@ -87,7 +77,7 @@ bfs1 :: proc(config: ^MachineConfig) -> int {
 			if visited[next_state] == 0 {
 				visited[next_state] = distance + 1
 				states[cnt] = next_state
-                cnt += 1
+				cnt += 1
 			}
 		}
 	}
@@ -98,10 +88,10 @@ bfs1 :: proc(config: ^MachineConfig) -> int {
 part1 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day10Data)raw_data
 	ret := 0
-    shardfn :: proc(data: ^Day10Data, shard: int) {
-        data.lines[shard].res1 = bfs1(&data.lines[shard])
-    }
-    run_shards(len(data.lines), data, shardfn)
+	shardfn :: proc(data: ^Day10Data, shard: int) {
+		data.lines[shard].res1 = bfs1(&data.lines[shard])
+	}
+	run_shards(len(data.lines), data, shardfn)
 	for i in 0 ..< len(data.lines) {
 		ret += data.lines[i].res1
 	}
@@ -111,8 +101,8 @@ part1 :: proc(raw_data: rawptr) -> int {
 // Solve ILP using GLPK: minimize sum(x) subject to A^T * x = b, x >= 0, x integer
 @(private = "file")
 solve_ilp_glpk :: proc(config: ^MachineConfig) -> int {
-	nbuttons := i32(len(config.button_mat))
-	npositions := i32(len(config.button_mat[0]))
+	nbuttons := i32(len(config.buttons))
+	npositions := i32(len(config.joltage))
 
 	// Create GLPK problem
 	lp := glp_create_prob()
@@ -133,15 +123,15 @@ solve_ilp_glpk :: proc(config: ^MachineConfig) -> int {
 	for b in 1 ..= nbuttons {
 		// Variable >= 0, integer
 		glp_set_col_bnds(lp, b, GLP_LO, 0.0, 0.0) // x >= 0
-		glp_set_col_kind(lp, b, GLP_IV)           // integer
-		glp_set_obj_coef(lp, b, 1.0)              // minimize sum
+		glp_set_col_kind(lp, b, GLP_IV) // integer
+		glp_set_obj_coef(lp, b, 1.0) // minimize sum
 	}
 
 	// Count ones in constraint matrix
 	ne := i32(0)
 	for b in 0 ..< nbuttons {
 		for p in 0 ..< npositions {
-            ne += config.button_mat[b][p] 
+			ne += i32((config.buttons[b] >> uint(p)) & 1)
 		}
 	}
 
@@ -155,11 +145,11 @@ solve_ilp_glpk :: proc(config: ^MachineConfig) -> int {
 
 	k := i32(1)
 	for b in 0 ..< nbuttons {
-		for p in 0 ..< npositions do if config.button_mat[b][p] != 0 {
-            ia[k] = p + 1              // row (1-indexed)
-            ja[k] = b + 1              // column (1-indexed)
-            ar[k] = f64(config.button_mat[b][p])
-            k += 1
+		for p in 0 ..< npositions do if (config.buttons[b] >> uint(p)) & 1 != 0 {
+			ia[k] = p + 1 // row (1-indexed)
+			ja[k] = b + 1 // column (1-indexed)
+			ar[k] = f64((config.buttons[b] >> uint(p)) & 1)
+			k += 1
 		}
 	}
 
@@ -170,7 +160,7 @@ solve_ilp_glpk :: proc(config: ^MachineConfig) -> int {
 	parm: glp_iocp
 	glp_init_iocp(&parm)
 	parm.msg_lev = GLP_MSG_OFF // Suppress output
-	parm.presolve = 1          // Enable presolve
+	parm.presolve = 1 // Enable presolve
 
 	// Solve the MIP
 	ret := glp_intopt(lp, &parm)
@@ -182,10 +172,10 @@ solve_ilp_glpk :: proc(config: ^MachineConfig) -> int {
 part2 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day10Data)raw_data
 	ret := 0
-    shardfn :: proc(data: ^Day10Data, shard: int) {
-        data.lines[shard].res2 = solve_ilp_glpk(&data.lines[shard])
-    }
-    run_shards(len(data.lines), data, shardfn)
+	shardfn :: proc(data: ^Day10Data, shard: int) {
+		data.lines[shard].res2 = solve_ilp_glpk(&data.lines[shard])
+	}
+	run_shards(len(data.lines), data, shardfn)
 	for i in 0 ..< len(data.lines) {
 		ret += data.lines[i].res2
 	}
