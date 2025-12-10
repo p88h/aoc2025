@@ -89,9 +89,11 @@ part1 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day10Data)raw_data
 	ret := 0
 	shardfn :: proc(data: ^Day10Data, shard: int) {
-		data.lines[shard].res1 = bfs1(&data.lines[shard])
+		for i in 0 ..< len(data.lines) do if i % NUM_THREADS == shard {
+			data.lines[i].res1 = bfs1(&data.lines[i])
+		}
 	}
-	run_shards(len(data.lines), data, shardfn)
+	run_shards(NUM_THREADS, data, shardfn)
 	for i in 0 ..< len(data.lines) {
 		ret += data.lines[i].res1
 	}

@@ -8,8 +8,8 @@ import "core:thread"
 thread_pool_initialized := false
 @(private = "file")
 global_thread_pool: thread.Pool
-@(private = "file")
-NUM_THREADS :: 6
+
+NUM_THREADS :: 8
 
 init_threads :: proc(use_threads: bool) {
     if !use_threads {
