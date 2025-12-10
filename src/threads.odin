@@ -32,7 +32,7 @@ ShardFn :: struct {
 	group: sync.Wait_Group,
 }
 
-run_shards :: proc($num_shards: int, data: $E, shard_fn: proc(data: E, shard: int)) {
+run_shards :: proc(num_shards: int, data: $E, shard_fn: proc(data: E, shard: int)) {
 	task_proc :: proc(t: thread.Task) {
 		sfn := cast(^ShardFn)t.data
 		shard_fn := cast(proc(_: E, _: int))sfn.fn
