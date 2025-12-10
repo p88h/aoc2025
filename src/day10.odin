@@ -68,14 +68,12 @@ day10 :: proc(contents: string) -> Solution {
 @(private = "file")
 bfs1 :: proc(config: ^MachineConfig) -> int {
 	// start with zero
-	states := make([dynamic]u16)
-	defer delete(states)
-	append(&states, 0)
-	visited := make(map[u16]int)
-	defer delete(visited)
+	states := [1024]u16{}
+	visited := [1024]int{}
 	visited[0] = 1
 	idx := 0
-	for idx < len(states) {
+    cnt := 1
+	for idx < cnt {
 		state := states[idx]
 		idx += 1
 		// check if we reached the target
@@ -86,9 +84,10 @@ bfs1 :: proc(config: ^MachineConfig) -> int {
 		// try all buttons
 		for button in config.buttons {
 			next_state := state ~ button
-			if _, ok := visited[next_state]; !ok {
+			if visited[next_state] == 0 {
 				visited[next_state] = distance + 1
-				append(&states, next_state)
+				states[cnt] = next_state
+                cnt += 1
 			}
 		}
 	}
