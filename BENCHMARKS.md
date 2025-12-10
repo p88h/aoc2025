@@ -14,9 +14,9 @@ day 05: 56.8 µs  4.1 µs  0.1 µs 61.2 µs (+-1%) iter=14110
 day 06: 18.4 µs  8.1 µs  6.4 µs 32.9 µs (+-1%) iter=19110  
 day 07: 39.0 ns  3.3 µs 31.0 ns  3.4 µs (+-3%) iter=98110   
 day 08:  0.3 ms 10.6 µs 45.0 µs  0.4 ms (+-1%) iter=2010   
-day 09: 11.3 µs  2.8 µs  0.1 µs 14.3 µs (+-1%) iter=9110  
+day 10:  0.1 ms  0.2 ms  0.6 ms  1.0 ms (+-1%) iter=1440  
 
-Total time:   0.9 ms
+Total time:   1.9 ms
 ```
 
 CPU: Apple M3 Max (12+4 cores)
