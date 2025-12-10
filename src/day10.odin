@@ -5,11 +5,11 @@ import "core:testing"
 
 @(private = "file")
 MachineConfig :: struct {
-	mask:       u16,
-	buttons:    []u16,
-	joltage:    []i32, // Target joltage vector J
-	res1:       int,
-	res2:       int,
+	mask:    u16,
+	buttons: []u16,
+	joltage: []i32, // Target joltage vector J
+	res1:    int,
+	res2:    int,
 }
 
 Day10Data :: struct {
