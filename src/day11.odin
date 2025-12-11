@@ -7,13 +7,13 @@ Day11Data :: struct {
 	graph: [1024][dynamic]i16,
 	paths: [1024]int,
 	codes: [18000]i16,
+	size: int,
 }
 
 day11 :: proc(contents: string) -> Solution {
 	data := new(Day11Data)
 	id := 0
 	l := 0
-	key := 0
 	current := 0
 	for c in contents do switch c {
 	case 'a' ..= 'z':
@@ -22,8 +22,8 @@ day11 :: proc(contents: string) -> Solution {
 	case ':':
 		// assign code if needed
 		if data.codes[id] == 0 {
-			key += 1
-			data.codes[id] = i16(key)
+			data.size += 1
+			data.codes[id] = i16(data.size)
 		}
 		current = int(data.codes[id])
 		id = 0
@@ -32,8 +32,8 @@ day11 :: proc(contents: string) -> Solution {
 		if l == 0 do continue
 		// assign code if needed
 		if data.codes[id] == 0 {
-			key += 1
-			data.codes[id] = i16(key)
+			data.size += 1
+			data.codes[id] = i16(data.size)
 		}
 		append(&data.graph[current], data.codes[id])
 		id = 0

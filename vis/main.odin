@@ -5,7 +5,7 @@ import "core:os"
 import "core:strconv"
 
 // All available visualizations
-ALL_HANDLERS :: [?]Handler{VIS00, VIS01, VIS02, VIS03, VIS04, VIS05, VIS06, VIS07, VIS08, VIS09, VIS10}
+ALL_HANDLERS :: [?]Handler{VIS00, VIS01, VIS02, VIS03, VIS04, VIS05, VIS06, VIS07, VIS08, VIS09, VIS10, VIS11}
 
 // Vis main entry point
 main :: proc() {
