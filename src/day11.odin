@@ -1,13 +1,11 @@
 package main
 
-import "core:fmt"
-import "core:strings"
 import "core:testing"
 Day11Data :: struct {
 	graph: [1024][dynamic]i16,
 	paths: [1024]int,
 	codes: [18000]i16,
-	size: int,
+	size:  int,
 }
 
 day11 :: proc(contents: string) -> Solution {
@@ -72,25 +70,70 @@ part1 :: proc(raw_data: rawptr) -> int {
 }
 
 @(private = "file")
+SearchData :: struct {
+	counters: [1024]int,
+	stack:    [1024]i16,
+	cnt:      int,
+	dac:      i16,
+	fft:      i16,
+}
+
+@(private = "file")
+expand_node :: #force_inline proc(data: ^Day11Data, search: ^SearchData, node: i16) -> i16 {
+	special := i16(0)
+	for neighbor in data.graph[node] {
+		search.counters[neighbor] -= 1
+		data.paths[neighbor] += data.paths[node]
+		if search.counters[neighbor] == 0 {
+			search.stack[search.cnt] = neighbor
+			search.cnt += 1
+			if neighbor == search.dac || neighbor == search.fft do special = neighbor
+		}
+	}
+	return special
+}
+
+@(private = "file")
 part2 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day11Data)raw_data
-	svr := data.codes[encode("svr")]
-	fft := data.codes[encode("fft")]
-	dac := data.codes[encode("dac")]
-	out := data.codes[encode("out")]
-	for key in 0 ..< 1024 do data.paths[key] = 0
-	ret2 := search(data, fft, dac)
-	// swap if no paths found
-	if (ret2 == 0) {
-		fft, dac = dac, fft
-		for key in 0 ..< 1024 do data.paths[key] = 0
-		ret2 = search(data, fft, dac)
+	search := SearchData {
+		dac = data.codes[encode("dac")],
+		fft = data.codes[encode("fft")],
 	}
-	for key in 0 ..< 1024 do data.paths[key] = 0
-	ret1 := search(data, svr, fft)
-	for key in 0 ..< 1024 do data.paths[key] = 0
-	ret3 := search(data, dac, out)
-	return ret1 * ret2 * ret3
+	svr := data.codes[encode("svr")]
+	out := data.codes[encode("out")]
+
+	for node in 0 ..= data.size {
+		data.paths[node] = 0
+		for next in data.graph[node] do search.counters[next] += 1
+	}
+	idx := 0
+	search.cnt = 1
+	search.stack[0] = svr
+	data.paths[svr] = 1
+	// Use stack based BFS so we can trim layers at special points
+	// each step, exhaust edges from the 'current layer' of the stack
+	// and add new nodes to the end of the stack, forming the next layer	
+	for idx < search.cnt {
+		limit := search.cnt
+		special := i16(0)
+		for i in idx ..< limit do special += expand_node(data, &search, search.stack[i])
+		// If the layer contains a special node, exhaustively trim all other nodes in the layer
+		if special != 0 {
+			for search.cnt > limit {
+				node := search.stack[search.cnt - 1]
+				search.cnt -= 1
+				if node == special do continue
+				data.paths[node] = 0
+				expand_node(data, &search, node)
+			}
+			// put special node back to the end of the stack
+			search.stack[limit] = special
+			search.cnt = limit + 1
+		}
+		idx = limit
+	}
+	return data.paths[out]
 }
 
 @(test)
