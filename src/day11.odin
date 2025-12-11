@@ -16,28 +16,28 @@ day11 :: proc(contents: string) -> Solution {
 	key := 0
 	current := 0
 	for c in contents do switch c {
-		case 'a' ..= 'z':			
-			id = id * 26 + (int(c) - int('a'))
-			l += 1
-		case ':':
-			// assign code if needed
-			if data.codes[id] == 0 {
-				key += 1
-				data.codes[id] = i16(key)
-			}
-			current = int(data.codes[id])
-			id = 0
-			l = 0
-		case '\n', ' ':
-			if l == 0 do continue
-			// assign code if needed
-			if data.codes[id] == 0 {
-				key += 1
-				data.codes[id] = i16(key)
-			}
-			append(&data.graph[current], data.codes[id])
-			id = 0
-			l = 0
+	case 'a' ..= 'z':
+		id = id * 26 + (int(c) - int('a'))
+		l += 1
+	case ':':
+		// assign code if needed
+		if data.codes[id] == 0 {
+			key += 1
+			data.codes[id] = i16(key)
+		}
+		current = int(data.codes[id])
+		id = 0
+		l = 0
+	case '\n', ' ':
+		if l == 0 do continue
+		// assign code if needed
+		if data.codes[id] == 0 {
+			key += 1
+			data.codes[id] = i16(key)
+		}
+		append(&data.graph[current], data.codes[id])
+		id = 0
+		l = 0
 	}
 	return Solution{data = data, part1 = part1, part2 = part2}
 }
@@ -78,23 +78,23 @@ part2 :: proc(raw_data: rawptr) -> int {
 	fft := data.codes[encode("fft")]
 	dac := data.codes[encode("dac")]
 	out := data.codes[encode("out")]
-	for key in 0..<1024 do data.paths[key] = 0
+	for key in 0 ..< 1024 do data.paths[key] = 0
 	ret2 := search(data, fft, dac)
 	// swap if no paths found
 	if (ret2 == 0) {
-		fft,dac = dac,fft
-		for key in 0..<1024 do data.paths[key] = 0
-		ret2 = search(data, fft, dac)	
+		fft, dac = dac, fft
+		for key in 0 ..< 1024 do data.paths[key] = 0
+		ret2 = search(data, fft, dac)
 	}
-	for key in 0..<1024 do data.paths[key] = 0
+	for key in 0 ..< 1024 do data.paths[key] = 0
 	ret1 := search(data, svr, fft)
-	for key in 0..<1024 do data.paths[key] = 0
+	for key in 0 ..< 1024 do data.paths[key] = 0
 	ret3 := search(data, dac, out)
 	return ret1 * ret2 * ret3
 }
 
 @(test)
-test_day11 :: proc(t: ^testing.T) {
+test_day11_part1 :: proc(t: ^testing.T) {
 	input :=
 		"aaa: you hhh\n" +
 		"you: bbb ccc\n" +
@@ -109,5 +109,25 @@ test_day11 :: proc(t: ^testing.T) {
 	defer setup_test_allocator()()
 	solution := day11(input)
 	testing.expect_value(t, solution.part1(solution.data), 5)
-	// testing.expect_value(t, solution.part2(solution.data), 12)
+}
+
+@(test)
+test_day11_part2 :: proc(t: ^testing.T) {
+	input :=
+		"svr: aaa bbb\n" +
+		"aaa: fft\n" +
+		"fft: ccc\n" +
+		"bbb: tty\n" +
+		"tty: ccc\n" +
+		"ccc: ddd eee\n" +
+		"ddd: hub\n" +
+		"hub: fff\n" +
+		"eee: dac\n" +
+		"dac: fff\n" +
+		"fff: ggg hhh\n" +
+		"ggg: out\n" +
+		"hhh: out\n"
+	defer setup_test_allocator()()
+	solution := day11(input)
+	testing.expect_value(t, solution.part2(solution.data), 2)
 }
