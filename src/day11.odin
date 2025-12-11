@@ -74,12 +74,22 @@ part1 :: proc(raw_data: rawptr) -> int {
 @(private = "file")
 part2 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day11Data)raw_data
+	svr := data.codes[encode("svr")]
+	fft := data.codes[encode("fft")]
+	dac := data.codes[encode("dac")]
+	out := data.codes[encode("out")]
 	for key in 0..<1024 do data.paths[key] = 0
-	ret1 := search(data, data.codes[encode("svr")], data.codes[encode("fft")])
+	ret2 := search(data, fft, dac)
+	// swap if no paths found
+	if (ret2 == 0) {
+		fft,dac = dac,fft
+		for key in 0..<1024 do data.paths[key] = 0
+		ret2 = search(data, fft, dac)	
+	}
 	for key in 0..<1024 do data.paths[key] = 0
-	ret2 := search(data, data.codes[encode("fft")], data.codes[encode("dac")])
+	ret1 := search(data, svr, fft)
 	for key in 0..<1024 do data.paths[key] = 0
-	ret3 := search(data, data.codes[encode("dac")], data.codes[encode("out")])
+	ret3 := search(data, dac, out)
 	return ret1 * ret2 * ret3
 }
 
