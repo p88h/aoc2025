@@ -31,20 +31,20 @@ part1 :: proc(raw_data: rawptr) -> int {
 	for i in 0 ..< len(data.ops) {
 		op := data.ops[i]
 		result := 1 if op == '*' else 0
-        start := data.pos[i]
-        end := data.pos[i + 1]
-        if i < len(data.ops) - 1 {
-            end -= 1
-        }
+		start := data.pos[i]
+		end := data.pos[i + 1]
+		if i < len(data.ops) - 1 {
+			end -= 1
+		}
 		for j in 0 ..< height {
-            num := 0
-            for k in start ..< end {
-                ch := data.lines[j][k]
-                if ch != ' ' {
-                    num = num * 10 + int(ch - '0')
-                }
-            }
-            result = result * num if op == '*' else result + num
+			num := 0
+			for k in start ..< end {
+				ch := data.lines[j][k]
+				if ch != ' ' {
+					num = num * 10 + int(ch - '0')
+				}
+			}
+			result = result * num if op == '*' else result + num
 		}
 		total += result
 	}
@@ -72,7 +72,7 @@ part2 :: proc(raw_data: rawptr) -> int {
 					num = num * 10 + int(ch - '0')
 				}
 			}
-            result = result * num if op == '*' else result + num
+			result = result * num if op == '*' else result + num
 		}
 		total += result
 	}

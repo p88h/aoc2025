@@ -12,12 +12,12 @@ global_thread_pool: thread.Pool
 NUM_THREADS :: 8
 
 init_threads :: proc(use_threads: bool) {
-    if !use_threads {
-        return
-    }
+	if !use_threads {
+		return
+	}
 	thread.pool_init(&global_thread_pool, context.allocator, NUM_THREADS)
 	thread.pool_start(&global_thread_pool)
-    thread_pool_initialized = true
+	thread_pool_initialized = true
 }
 
 stop_threads :: proc() {
@@ -50,7 +50,7 @@ run_shards :: proc(num_shards: int, data: $E, shard_fn: proc(data: E, shard: int
 		if thread_pool_initialized {
 			sync.wait_group_add(&sfn.group, 1)
 			thread.pool_add_task(&global_thread_pool, context.allocator, task_proc, &sfn, shard)
-		} else {            
+		} else {
 			// Fallback to single-threaded execution if thread pool is not initialized
 			shard_fn(data, shard)
 		}

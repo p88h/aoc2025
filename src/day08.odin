@@ -116,8 +116,8 @@ day08 :: proc(contents: string) -> Solution {
 		bidx := bucket_index(&p)
 		append(&data.buckets[bidx], i)
 		data.points[i] = p
-	}	
-    run_shards(SHARDS, data, make_wires_shard)
+	}
+	run_shards(SHARDS, data, make_wires_shard)
 	total := 0
 	for shard in 0 ..< SHARDS {
 		total += len(data.shards[shard])

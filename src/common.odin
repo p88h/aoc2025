@@ -1,7 +1,6 @@
 package main
 
 import "base:runtime"
-import "core:mem"
 import vmem "core:mem/virtual"
 
 // Solution is the common interface that all day solutions implement.
@@ -9,13 +8,13 @@ import vmem "core:mem/virtual"
 // and returns a Solution containing the parsed data and method implementations.
 Solution :: struct {
 	// Opaque pointer to day-specific parsed data
-	data:      rawptr,
+	data:  rawptr,
 
 	// Method to solve part 1, returns the answer
-	part1:     proc(data: rawptr) -> int,
+	part1: proc(data: rawptr) -> int,
 
 	// Method to solve part 2, returns the answer
-	part2:     proc(data: rawptr) -> int,
+	part2: proc(data: rawptr) -> int,
 }
 
 // Input is contents

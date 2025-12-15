@@ -9,41 +9,41 @@ glp_prob :: struct {}
 // GLPK constants
 GLP_MIN :: 1
 GLP_MAX :: 2
-GLP_IV :: 2  // integer variable
-GLP_LO :: 2  // lower bound only (x >= lb)
-GLP_FX :: 5  // fixed (equality constraint)
+GLP_IV :: 2 // integer variable
+GLP_LO :: 2 // lower bound only (x >= lb)
+GLP_FX :: 5 // fixed (equality constraint)
 GLP_OPT :: 5 // optimal solution
 GLP_MSG_OFF :: 0
 
 glp_iocp :: struct {
-	msg_lev:    i32,
-	br_tech:    i32,
-	bt_tech:    i32,
-	tol_int:    f64,
-	tol_obj:    f64,
-	tm_lim:     i32,
-	out_frq:    i32,
-	out_dly:    i32,
-	cb_func:    rawptr,
-	cb_info:    rawptr,
-	cb_size:    i32,
-	pp_tech:    i32,
-	mip_gap:    f64,
-	mir_cuts:   i32,
-	gmi_cuts:   i32,
-	cov_cuts:   i32,
-	clq_cuts:   i32,
-	presolve:   i32,
-	binarize:   i32,
-	fp_heur:    i32,
-	ps_heur:    i32,
-	ps_tm_lim:  i32,
-	sr_heur:    i32,
-	use_sol:    i32,
-	save_sol:   cstring,
-	alien:      i32,
-	flip:       i32,
-	foo_bar:    [23]f64,
+	msg_lev:   i32,
+	br_tech:   i32,
+	bt_tech:   i32,
+	tol_int:   f64,
+	tol_obj:   f64,
+	tm_lim:    i32,
+	out_frq:   i32,
+	out_dly:   i32,
+	cb_func:   rawptr,
+	cb_info:   rawptr,
+	cb_size:   i32,
+	pp_tech:   i32,
+	mip_gap:   f64,
+	mir_cuts:  i32,
+	gmi_cuts:  i32,
+	cov_cuts:  i32,
+	clq_cuts:  i32,
+	presolve:  i32,
+	binarize:  i32,
+	fp_heur:   i32,
+	ps_heur:   i32,
+	ps_tm_lim: i32,
+	sr_heur:   i32,
+	use_sol:   i32,
+	save_sol:  cstring,
+	alien:     i32,
+	flip:      i32,
+	foo_bar:   [23]f64,
 }
 
 foreign glpk {

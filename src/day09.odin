@@ -4,22 +4,22 @@ import "core:testing"
 Day9Data :: struct {
 	nums: [dynamic]int,
 	len:  int,
-    pos: int
+	pos:  int,
 }
 
 day09 :: proc(contents: string) -> Solution {
 	data := new(Day9Data)
 	data.nums = fast_parse_all_integers(contents)
 	data.len = len(data.nums) / 2
-    maxdx:= 0
-    // find the special points
-    for i in 1..<data.len {
-        dx := abs(data.nums[i*2] - data.nums[(i-1)*2])
-        if dx > maxdx {
-            maxdx = dx
-            data.pos = i
-        }
-    }
+	maxdx := 0
+	// find the special points
+	for i in 1 ..< data.len {
+		dx := abs(data.nums[i * 2] - data.nums[(i - 1) * 2])
+		if dx > maxdx {
+			maxdx = dx
+			data.pos = i
+		}
+	}
 	return Solution{data = data, part1 = part1, part2 = part2}
 }
 
@@ -27,11 +27,11 @@ day09 :: proc(contents: string) -> Solution {
 part1 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day9Data)raw_data
 	ret := 0
-    BEAM :: 8
-	for i in 0 ..< data.len/2 {
+	BEAM :: 8
+	for i in 0 ..< data.len / 2 {
 		x1, y1 := data.nums[i * 2], data.nums[i * 2 + 1]
 		for k in 0 ..< BEAM {
-            j := ((i + data.len / 2) + (k - BEAM / 2)) % data.len
+			j := ((i + data.len / 2) + (k - BEAM / 2)) % data.len
 			x2, y2 := data.nums[j * 2], data.nums[j * 2 + 1]
 			area := (abs(x2 - x1) + 1) * (abs(y2 - y1) + 1)
 			ret = max(ret, area)
@@ -40,7 +40,7 @@ part1 :: proc(raw_data: rawptr) -> int {
 	return ret
 }
 
-day9_scan_from :: proc(data: ^Day9Data, i: int, kdir: int, limit: int) -> (int,int) {
+day9_scan_from :: proc(data: ^Day9Data, i: int, kdir: int, limit: int) -> (int, int) {
 	limit := limit
 	j := i
 	k := 0 if kdir > 0 else data.len - 1
@@ -66,16 +66,16 @@ day9_scan_from :: proc(data: ^Day9Data, i: int, kdir: int, limit: int) -> (int,i
 			best = j
 		}
 	}
-	return ret,best
+	return ret, best
 }
 
 @(private = "file")
 part2 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day9Data)raw_data
-    // 248 & 249 are the indexes of the two points inside the circle
-    // ... could probably be found programmatically ?
-	ret1,_ := day9_scan_from(data, data.pos, 1, 100)
-	ret2,_ := day9_scan_from(data, data.pos + 1, -1, 100)
+	// 248 & 249 are the indexes of the two points inside the circle
+	// ... could probably be found programmatically ?
+	ret1, _ := day9_scan_from(data, data.pos, 1, 100)
+	ret2, _ := day9_scan_from(data, data.pos + 1, -1, 100)
 	return max(ret1, ret2)
 }
 

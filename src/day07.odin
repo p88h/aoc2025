@@ -3,37 +3,37 @@ package main
 import "core:strings"
 import "core:testing"
 Day7Data :: struct {
-	pos: int,
-	grid: []byte,
-    width: int,
+	pos:   int,
+	grid:  []byte,
+	width: int,
 	beams: []int,
 }
 
 day07 :: proc(contents: string) -> Solution {
 	data := new(Day7Data)
-    width := strings.index(contents, "\n") + 1
-	data.pos = strings.index(contents, "S");
-    data.grid = transmute([]byte)contents
-    data.width = width
+	width := strings.index(contents, "\n") + 1
+	data.pos = strings.index(contents, "S")
+	data.grid = transmute([]byte)contents
+	data.width = width
 	return Solution{data = data, part1 = part1, part2 = part2}
 }
 
 @(private = "file")
 part1 :: proc(raw_data: rawptr) -> int {
 	data := cast(^Day7Data)raw_data
-    width := data.width
+	width := data.width
 	beams := make([]int, width)
 	splits := 0
-    beams[data.pos] = 1
+	beams[data.pos] = 1
 	start := data.pos
 	end := data.pos + 1
-	for ofs:= width * 2; ofs < len(data.grid); ofs += width * 2 {
+	for ofs := width * 2; ofs < len(data.grid); ofs += width * 2 {
 		for i in start ..< end do if beams[i] > 0 && data.grid[ofs + i] == '^' {
-            beams[i-1] += beams[i]
-            beams[i+1] += beams[i]
+			beams[i - 1] += beams[i]
+			beams[i + 1] += beams[i]
 			beams[i] = 0
-            splits += 1
-        }
+			splits += 1
+		}
 		start -= 1
 		end += 1
 	}
